@@ -1,24 +1,9 @@
 {
-  "dependencies": {
-    "@prisma/client": "^5.19.1",
-    "express": "^4.21.0",
-    "jsonwebtoken": "^9.0.2",
-    "prisma": "^5.19.1"
-  },
-  "name": "Ch3_Team_Project",
+  "name": "ch3",
   "version": "1.0.0",
-  "type": "module",
   "main": "index.js",
-  "repository": "https://github.com/ohyudan/Ch3_Futsal_Online",
-  "author": "ohyudan <ohyudan86@gmail.com>",
   "license": "MIT",
-  "devDependencies": {
-    "dotenv": "^16.4.5",
-    "nodemon": "^3.1.4",
-    "prettier": "^3.3.3"
-  },
-  "scripts": {
-    "dev": "nodemon app.js",
-    "format": "prettier --write *.js **/*.js"
+  "dependencies": {
+    "prisma": "^5.19.1"
   }
 }
