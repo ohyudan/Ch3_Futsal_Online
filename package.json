@@ -5,7 +5,7 @@
     "jsonwebtoken": "^9.0.2",
     "prisma": "^5.19.1"
   },
-  "name": "Ch3_Team_Project",
+  "name": "Ch3_Futsal_Online",
   "version": "1.0.0",
   "type": "module",
   "main": "index.js",
