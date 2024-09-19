@@ -16,7 +16,7 @@ datasource db {
 
 model player {
 id Int @id @default(autoincrement())
-name varchar @map("name")
+name String @db.VarChar(20) @map("name")
 speed Int @map("speed")
 shootpower Int @map("shootpower")
 goal_finish Int @map("goal_finish")

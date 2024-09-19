@@ -1,0 +1,66 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "./generated/UserDataClient"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model users {
+  id         Int      @id @default(autoincrement()) @map("id")
+  account    String   @unique @map("account") @db.VarChar(20)
+  password   String   @map("password") @db.VarChar(20)
+  name       String   @map("name") @db.VarChar(20)
+  cash       Int      @map("cash")
+  created_at DateTime @map("created_at")
+
+  rank        rank?
+  player_deck player_deck?
+  inventory   inventory[]
+
+  @@map("users")
+}
+
+model rank {
+  id        Int    @id @default(autoincrement()) @map("id")
+  user_id   Int    @unique @map("user_id")
+  rankpoint Int    @map("rankpoint")
+  rank      Int    @map("rank")
+  tier      String @map("tier") @db.VarChar(20)
+  win       Int    @map("win")
+  draw      Int    @map("draw")
+  lose      Int    @map("lose")
+
+  users users @relation(fields: [user_id], references: [id], onDelete: Cascade)
+
+  @@map("rank")
+}
+
+model inventory {
+  id        Int @id @default(autoincrement()) @map("id")
+  user_id   Int @map("user_id")
+  player_id Int @map("player_id")
+  count     Int @map("count")
+
+  users users @relation(fields: [user_id], references: [id], onDelete: Cascade)
+
+  @@map("inventory")
+}
+
+model player_deck {
+  id        Int @id @default(autoincrement()) @map("id")
+  user_id   Int @unique @map("user_id")
+  player_id Int @map("player_id")
+
+  users users @relation(fields: [user_id], references: [id], onDelete: Cascade)
+
+  @@map("player_deck")
+}

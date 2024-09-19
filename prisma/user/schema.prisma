@@ -17,11 +17,11 @@ datasource db {
 
 model users {
   id          Int        @id @default (autoincrement()) @map("id")
-  account     varchar    @unique @map("account")
-  password    varchar    @map("password")
-  name        varchar    @map("name")
+  account     String @db.VarChar(20)    @unique @map("account")
+  password    String @db.VarChar(20)    @map("password")
+  name        String @db.VarChar(20)    @map("name")
   cash        Int        @map("cash")
-  created_at  timestamp  @map("created_at")
+  created_at  DateTime  @map("created_at")
 
 
   rank rank?
@@ -33,10 +33,10 @@ model users {
 
 model rank {
   id          Int        @id @default (autoincrement()) @map("id")
-  user_id     Int        @map("user_id")
+  user_id     Int    @unique    @map("user_id") 
   rankpoint   Int        @map("rankpoint")
   rank        Int        @map("rank")
-  tier        varchar    @map("tier")
+  tier        String @db.VarChar(20)    @map("tier")
   win         Int        @map("win")
   draw        Int        @map("draw")
   lose        Int        @map("lose")
@@ -62,7 +62,7 @@ model inventory {
 
 model player_deck {
   id          Int       @id @default (autoincrement()) @map("id")
-  user_id     Int       @map("user_id")
+  user_id     Int     @unique  @map("user_id")
   player_id   Int       @map("player_id")   
 
 
