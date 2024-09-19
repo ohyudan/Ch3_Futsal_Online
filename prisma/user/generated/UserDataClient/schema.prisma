@@ -11,7 +11,7 @@ generator client {
 
 datasource db {
   provider = "mysql"
-  url      = env("DATABASE_URL")
+  url      = env("DATABASE_URL1")
 }
 
 model users {
@@ -20,7 +20,7 @@ model users {
   password   String   @map("password") @db.VarChar(20)
   name       String   @map("name") @db.VarChar(20)
   cash       Int      @map("cash")
-  created_at DateTime @map("created_at")
+  created_at DateTime @default(now()) @map("created_at")
 
   rank        rank?
   player_deck player_deck?

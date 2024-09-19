@@ -136,8 +136,7 @@ const config = {
     "isCustomOutput": true
   },
   "relativeEnvPaths": {
-    "rootEnvPath": null,
-    "schemaEnvPath": "../../../../.env"
+    "rootEnvPath": "../../../../.env"
   },
   "relativePath": "../..",
   "clientVersion": "5.19.1",
@@ -149,13 +148,13 @@ const config = {
   "inlineDatasources": {
     "db": {
       "url": {
-        "fromEnvVar": "DATABASE_URL",
+        "fromEnvVar": "DATABASE_URL2",
         "value": null
       }
     }
   },
-  "inlineSchema": "// This is your Prisma schema file,\n// learn more about it in the docs: https://pris.ly/d/prisma-schema\n\n// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?\n// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init\n\ngenerator client {\n  provider = \"prisma-client-js\"\n  output   = \"./generated/GameDataClient\"\n}\n\ndatasource db {\n  provider = \"mysql\"\n  url      = env(\"DATABASE_URL\")\n}\n\nmodel player {\n  id          Int    @id @default(autoincrement())\n  name        String @map(\"name\") @db.VarChar(20)\n  speed       Int    @map(\"speed\")\n  shootpower  Int    @map(\"shootpower\")\n  goal_finish Int    @map(\"goal_finish\")\n  defense     Int    @map(\"defense\")\n  stamina     Int    @map(\"stamina\")\n\n  @@map(\"player\")\n}\n",
-  "inlineSchemaHash": "e718b9d605e43e61fb95aec8cb03cce0113e579562f0bae0c54273f45a61db32",
+  "inlineSchema": "// This is your Prisma schema file,\n// learn more about it in the docs: https://pris.ly/d/prisma-schema\n\n// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?\n// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init\n\ngenerator client {\n  provider = \"prisma-client-js\"\n  output   = \"./generated/GameDataClient\"\n}\n\ndatasource db {\n  provider = \"mysql\"\n  url      = env(\"DATABASE_URL2\")\n}\n\nmodel player {\n  id          Int    @id @default(autoincrement())\n  name        String @map(\"name\") @db.VarChar(20)\n  speed       Int    @map(\"speed\")\n  shootpower  Int    @map(\"shootpower\")\n  goal_finish Int    @map(\"goal_finish\")\n  defense     Int    @map(\"defense\")\n  stamina     Int    @map(\"stamina\")\n\n  @@map(\"player\")\n}\n",
+  "inlineSchemaHash": "27a9b60673e0ba7389bfa7051f526d628d23ab3ed0eeb7872d1c1afa338d716e",
   "copyEngine": true
 }
 
@@ -164,8 +163,8 @@ const fs = require('fs')
 config.dirname = __dirname
 if (!fs.existsSync(path.join(__dirname, 'schema.prisma'))) {
   const alternativePaths = [
-    "prisma/game/generated/GameDataClient",
-    "game/generated/GameDataClient",
+    "generated/GameDataClient",
+    "GameDataClient",
   ]
   
   const alternativePath = alternativePaths.find((altPath) => {
@@ -194,7 +193,7 @@ Object.assign(exports, Prisma)
 
 // file annotations for bundling tools to include these files
 path.join(__dirname, "libquery_engine-darwin-arm64.dylib.node");
-path.join(process.cwd(), "prisma/game/generated/GameDataClient/libquery_engine-darwin-arm64.dylib.node")
+path.join(process.cwd(), "generated/GameDataClient/libquery_engine-darwin-arm64.dylib.node")
 // file annotations for bundling tools to include these files
 path.join(__dirname, "schema.prisma");
-path.join(process.cwd(), "prisma/game/generated/GameDataClient/schema.prisma")
+path.join(process.cwd(), "generated/GameDataClient/schema.prisma")

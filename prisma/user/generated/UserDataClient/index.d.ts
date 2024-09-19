@@ -5231,7 +5231,7 @@ export namespace Prisma {
     password: string
     name: string
     cash: number
-    created_at: Date | string
+    created_at?: Date | string
     rank?: rankCreateNestedOneWithoutUsersInput
     player_deck?: player_deckCreateNestedOneWithoutUsersInput
     inventory?: inventoryCreateNestedManyWithoutUsersInput
@@ -5243,7 +5243,7 @@ export namespace Prisma {
     password: string
     name: string
     cash: number
-    created_at: Date | string
+    created_at?: Date | string
     rank?: rankUncheckedCreateNestedOneWithoutUsersInput
     player_deck?: player_deckUncheckedCreateNestedOneWithoutUsersInput
     inventory?: inventoryUncheckedCreateNestedManyWithoutUsersInput
@@ -5278,7 +5278,7 @@ export namespace Prisma {
     password: string
     name: string
     cash: number
-    created_at: Date | string
+    created_at?: Date | string
   }
 
   export type usersUpdateManyMutationInput = {
@@ -6115,7 +6115,7 @@ export namespace Prisma {
     password: string
     name: string
     cash: number
-    created_at: Date | string
+    created_at?: Date | string
     player_deck?: player_deckCreateNestedOneWithoutUsersInput
     inventory?: inventoryCreateNestedManyWithoutUsersInput
   }
@@ -6126,7 +6126,7 @@ export namespace Prisma {
     password: string
     name: string
     cash: number
-    created_at: Date | string
+    created_at?: Date | string
     player_deck?: player_deckUncheckedCreateNestedOneWithoutUsersInput
     inventory?: inventoryUncheckedCreateNestedManyWithoutUsersInput
   }
@@ -6173,7 +6173,7 @@ export namespace Prisma {
     password: string
     name: string
     cash: number
-    created_at: Date | string
+    created_at?: Date | string
     rank?: rankCreateNestedOneWithoutUsersInput
     player_deck?: player_deckCreateNestedOneWithoutUsersInput
   }
@@ -6184,7 +6184,7 @@ export namespace Prisma {
     password: string
     name: string
     cash: number
-    created_at: Date | string
+    created_at?: Date | string
     rank?: rankUncheckedCreateNestedOneWithoutUsersInput
     player_deck?: player_deckUncheckedCreateNestedOneWithoutUsersInput
   }
@@ -6231,7 +6231,7 @@ export namespace Prisma {
     password: string
     name: string
     cash: number
-    created_at: Date | string
+    created_at?: Date | string
     rank?: rankCreateNestedOneWithoutUsersInput
     inventory?: inventoryCreateNestedManyWithoutUsersInput
   }
@@ -6242,7 +6242,7 @@ export namespace Prisma {
     password: string
     name: string
     cash: number
-    created_at: Date | string
+    created_at?: Date | string
     rank?: rankUncheckedCreateNestedOneWithoutUsersInput
     inventory?: inventoryUncheckedCreateNestedManyWithoutUsersInput
   }
