@@ -16,7 +16,7 @@ model users {
   cash        Int          @default(0)  @map("cash")
   created_at  DateTime     @default(now())  @map("created_at")
   inventory   inventory[]
-  player_deck player_deck?
+  player_deck player_deck[]
   rank        rank?
 
   @@map("users")
@@ -49,7 +49,7 @@ model inventory {
 
 model player_deck {
   id        Int   @id @default(autoincrement()) @map("id")
-  user_id   Int   @unique @map("user_id")
+  user_id   Int   @map("user_id")
   player_id Int   @map("player_id")
   users     users @relation(fields: [user_id], references: [id], onDelete: Cascade)
 
