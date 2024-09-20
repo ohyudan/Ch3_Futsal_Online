@@ -48,15 +48,19 @@ router.post('/play/:id', authMiddleware, async (req, res, next) => {
 
     if (!rankA) {
       const rankA = await userDataClient.rank.create({
+        id,
         user_id: userA.id,
         rankpoint: 1000,
+        rank: 1, // 테이블에서 별도 작업을 해서 rankpoint에 의해 order by 되는 값이 되어야 함
+        tier: 'silver',
         win: 0,
         draw: 0,
         lose: 0,
       });
     }
     // rank못찾으면 create 해야하는지?
-    // create에 있는 값들을 제외하면 나머지 값에 의한 변동값
+    // create에 있는 값들을 제외하면 나머지 값에 의한 변동값 id:index, rank,tier: rankpoint에 의한 변동값..
+    // 이거 어디서 씀? 하면 여긴데? 조회 말고는
     // 만약 유저 생성할 때 랭크를 같이 생성하면 안해도 되는거고, 아니면 여기서 해야해
 
     // 비슷한 rank점수를 가지고 있는 플레이어와 잡아주기
@@ -82,7 +86,7 @@ router.post('/play/:id', authMiddleware, async (req, res, next) => {
 
     // 해당 유저들의 리스트에서 랜덤한 대상과의 매치 추첨
     const rankB = Matchlevel[Math.floor(Matchlevel.length * Math.random())];
-    // 랜덤으로 잡은 범위내의 유저의 id와 rankpoint    
+    // 랜덤으로 잡은 범위내의 유저의 id와 rankpoint
     // ex) rankB = {user_id : 1, rankpoint : 987}
 
     const deckB = await userDataClient.player_deck.findMany({
@@ -94,8 +98,8 @@ router.post('/play/:id', authMiddleware, async (req, res, next) => {
       },
     });
     // deckB : [{'player_id':1},{'player_id':2},{'player_id':3}]
-
-    const Myattack = await gameDataClient.player.findFirst({
+    
+    const MyAttack = await gameDataClient.player.findFirst({
       where: {
         id: deckA[0].player_id,
       },
@@ -107,9 +111,9 @@ router.post('/play/:id', authMiddleware, async (req, res, next) => {
         stamina: true,
       },
     });
-    // Myattack = {speed: true, shootpower: true, goal_finish: true, defense: true, stamina: true},
+    // MyAttack = {speed: true, shootpower: true, goal_finish: true, defense: true, stamina: true},
 
-    const Mymiddle = await gameDataClient.player.findFirst({
+    const MyMiddle = await gameDataClient.player.findFirst({
       where: {
         id: deckA[1].player_id,
       },
@@ -122,7 +126,7 @@ router.post('/play/:id', authMiddleware, async (req, res, next) => {
       },
     });
 
-    const Mydefense = await gameDataClient.player.findFirst({
+    const MyDefense = await gameDataClient.player.findFirst({
       where: {
         id: deckA[2].player_id,
       },
@@ -161,7 +165,7 @@ router.post('/play/:id', authMiddleware, async (req, res, next) => {
       },
     });
 
-    const Opdefense = await gameDataClient.player.findFirst({
+    const OpDefense = await gameDataClient.player.findFirst({
       where: {
         id: deckB[2].player_id,
       },
@@ -174,26 +178,26 @@ router.post('/play/:id', authMiddleware, async (req, res, next) => {
       },
     });
 
-    const Myattackscore =
-      Myattack.speed * 0.2 +
-      Myattack.shootpower * 0.25 +
-      Myattack.goal_finish * 0.3 +
-      Myattack.defense * 0.1 +
-      Myattack.stamina * 0.15;
+    const MyAttackscore =
+      MyAttack.speed * 0.2 +
+      MyAttack.shootpower * 0.25 +
+      MyAttack.goal_finish * 0.3 +
+      MyAttack.defense * 0.1 +
+      MyAttack.stamina * 0.15;
 
-    const Mymiddlescore =
-      Mymiddle.speed * 0.2 +
-      Mymiddle.shootpower * 0.15 +
-      Mymiddle.goal_finish * 0.15 +
-      Mymiddle.defense * 0.2 +
-      Mymiddle.stamina * 0.3;
+    const MyMiddlescore =
+      MyMiddle.speed * 0.2 +
+      MyMiddle.shootpower * 0.15 +
+      MyMiddle.goal_finish * 0.15 +
+      MyMiddle.defense * 0.2 +
+      MyMiddle.stamina * 0.3;
 
-    const Mydefensescore =
-      Mydefense.speed * 0.2 +
-      Mydefense.shootpower * 0.1 +
-      Mydefense.goal_finish * 0.1 +
-      Mydefense.defense * 0.4 +
-      Mydefense.stamina * 0.2;
+    const MyDefensescore =
+      MyDefense.speed * 0.2 +
+      MyDefense.shootpower * 0.1 +
+      MyDefense.goal_finish * 0.1 +
+      MyDefense.defense * 0.4 +
+      MyDefense.stamina * 0.2;
 
     const OpAttackscore =
       OpAttack.speed * 0.2 +
@@ -209,16 +213,18 @@ router.post('/play/:id', authMiddleware, async (req, res, next) => {
       OpMiddle.defense * 0.2 +
       OpMiddle.stamina * 0.3;
 
-    const Opdefensescore =
-      Opdefense.speed * 0.2 +
-      Opdefense.shootpower * 0.1 +
-      Opdefense.goal_finish * 0.1 +
-      Opdefense.defense * 0.4 +
-      Opdefense.stamina * 0.2;
+    const OpDefensescore =
+      OpDefense.speed * 0.2 +
+      OpDefense.shootpower * 0.1 +
+      OpDefense.goal_finish * 0.1 +
+      OpDefense.defense * 0.4 +
+      OpDefense.stamina * 0.2;
 
-    const scoreA = Myattackscore + Mymiddlescore + Mydefensescore;
-    const scoreB = OpAttackscore + OpMiddlescore + Opdefensescore;
-    // 선수 1,2,3 이 있을 때 각 선수들의 스텟을 기반으로 가중치 구현.. <포지션 별 가중치가 다르다면 어떨까?> // 기획요소
+    const scoreA = MyAttackscore + MyMiddlescore + MyDefensescore;
+    const scoreB = OpAttackscore + OpMiddlescore + OpDefensescore;
+    // 선수 1,2,3 이 있을 때 각 선수들의 스텟을 기반으로 가중치 구현.
+    // <포지션 별 가중치가 다르다면 어떨까?> // 기획요소
+    // 사실 이게 테이블 상에서 해당 선수가 어떤 포지션인지 전혀 기획되지 않았기 때문에 있지만 의미없는 기획에 가깝다.
 
     const maxScore = scoreA + scoreB;
     const randomValue = Math.random() * maxScore;
@@ -229,16 +235,52 @@ router.post('/play/:id', authMiddleware, async (req, res, next) => {
         (rankB.rankpoint - rankA.rankpoint + 150) / 10
       );
       // 매칭 된 유저와의 점수 차이를 비교하여 상대의 점수가 높으면 점수를 많이 받도록 구현
-      const updatedRankpoint = await gameDataClient.rank.update({
+      const updatedRank = await userDataClient.rank.update({
         where: { id: userA.id },
         data: {
           rankpoint: rankA.rankpoint + pluspoint,
           win: rankA.win + 1,
         },
       });
+      if (updatedRank.rankpoint < 900) {
+        const updatedTier = await userDataClient.rank.update({
+          where: { id: userA.id },
+          data: {
+            tier: 'Bronze'
+          },
+        });
+      } else if (updatedRank.rankpoint < 1100) {
+        const updatedTier = await userDataClient.rank.update({
+          where: { id: userA.id },
+          data: {
+            tier: 'Silver'
+          },
+        });
+      } else if (updatedRank.rankpoint < 1300) {
+        const updatedTier = await userDataClient.rank.update({
+          where: { id: userA.id },
+          data: {
+            tier: 'Gold'
+          },
+        });
+      } else if (updatedRank.rankpoint < 1500) {
+        const updatedTier = await userDataClient.rank.update({
+          where: { id: userA.id },
+          data: {
+            tier: 'Platinum'
+          },
+        });
+      } else {
+        const updatedTier = await userDataClient.rank.update({
+          where: { id: userA.id },
+          data: {
+            tier: 'Diamond'
+          },
+        });
+      }
       return res.status(200).json({
         message: `승리하였습니다 +${pluspoint}
-                                            현재 나의 점수 : ${updatedRankpoint.rankpoint}`,
+        현재 나의 점수 : ${updatedRank.rankpoint}`,
       });
     } else {
       // 패배
@@ -246,16 +288,52 @@ router.post('/play/:id', authMiddleware, async (req, res, next) => {
         (rankA.rankpoint - rankB.rankpoint + 150) / 10
       );
       // 매칭 된 유저와의 점수 차이를 비교하여 상대의 점수가 높으면 점수를 적게 잃도록 구현
-      const updatedRankpoint = await gameDataClient.rank.update({
+      const updatedRank = await userDataClient.rank.update({
         where: { id: userA.id },
         data: {
           rankpoint: rankA.rankpoint - minuspoint,
           lose: rankA.lose + 1,
         },
       });
+      if (updatedRank.rankpoint < 900) {
+        const updatedTier = await userDataClient.rank.update({
+          where: { id: userA.id },
+          data: {
+            tier: 'Bronze'
+          },
+        });
+      } else if (updatedRank.rankpoint < 1100) {
+        const updatedTier = await userDataClient.rank.update({
+          where: { id: userA.id },
+          data: {
+            tier: 'Silver'
+          },
+        });
+      } else if (updatedRank.rankpoint < 1300) {
+        const updatedTier = await userDataClient.rank.update({
+          where: { id: userA.id },
+          data: {
+            tier: 'Gold'
+          },
+        });
+      } else if (updatedRank.rankpoint < 1500) {
+        const updatedTier = await userDataClient.rank.update({
+          where: { id: userA.id },
+          data: {
+            tier: 'Platinum'
+          },
+        });
+      } else {
+        const updatedTier = await userDataClient.rank.update({
+          where: { id: userA.id },
+          data: {
+            tier: 'Diamond'
+          },
+        });
+      }
       return res.status(200).json({
         message: `패배하였습니다 -${minuspoint}
-        현재 나의 점수 : ${updatedRankpoint.rankpoint}`,
+        현재 나의 점수 : ${updatedRank.rankpoint}`,
       });
     }
   } catch (error) {
