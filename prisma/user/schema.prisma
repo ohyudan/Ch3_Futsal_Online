@@ -24,7 +24,7 @@ model users {
 
 
   rank rank?
-  player_deck player_deck?
+  player_deck player_deck []
   inventory inventory[]
 
   @@map("users")
@@ -32,7 +32,7 @@ model users {
 
 model rank {
   id          Int        @id @default (autoincrement()) @map("id")
-  user_id     Int    @unique    @map("user_id") 
+  user_id     Int       @unique @map("user_id") 
   rankpoint   Int        @map("rankpoint")
   rank        Int        @map("rank")
   tier        String @db.VarChar(20)    @map("tier")
@@ -61,9 +61,8 @@ model inventory {
 
 model player_deck {
   id          Int       @id @default (autoincrement()) @map("id")
-  user_id     Int     @unique  @map("user_id")
+  user_id     Int       @map("user_id")
   player_id   Int       @map("player_id")   
-
 
   users users @relation(fields: [user_id], references: [id], onDelete: Cascade)
   
