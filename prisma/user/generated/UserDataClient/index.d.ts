@@ -1083,10 +1083,12 @@ export namespace Prisma {
    */
 
   export type UsersCountOutputType = {
+    player_deck: number
     inventory: number
   }
 
   export type UsersCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    player_deck?: boolean | UsersCountOutputTypeCountPlayer_deckArgs
     inventory?: boolean | UsersCountOutputTypeCountInventoryArgs
   }
 
@@ -1099,6 +1101,13 @@ export namespace Prisma {
      * Select specific fields to fetch from the UsersCountOutputType
      */
     select?: UsersCountOutputTypeSelect<ExtArgs> | null
+  }
+
+  /**
+   * UsersCountOutputType without action
+   */
+  export type UsersCountOutputTypeCountPlayer_deckArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: player_deckWhereInput
   }
 
   /**
@@ -1700,6 +1709,7 @@ export namespace Prisma {
    */
   export interface Prisma__usersClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
+
     inventory<T extends users$inventoryArgs<ExtArgs> = {}>(args?: Subset<T, users$inventoryArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$inventoryPayload<ExtArgs>, T, "findMany"> | Null>
     player_deck<T extends users$player_deckArgs<ExtArgs> = {}>(args?: Subset<T, users$player_deckArgs<ExtArgs>>): Prisma__player_deckClient<$Result.GetResult<Prisma.$player_deckPayload<ExtArgs>, T, "findUniqueOrThrow"> | null, null, ExtArgs>
     rank<T extends users$rankArgs<ExtArgs> = {}>(args?: Subset<T, users$rankArgs<ExtArgs>>): Prisma__rankClient<$Result.GetResult<Prisma.$rankPayload<ExtArgs>, T, "findUniqueOrThrow"> | null, null, ExtArgs>
@@ -2069,6 +2079,11 @@ export namespace Prisma {
      */
     include?: player_deckInclude<ExtArgs> | null
     where?: player_deckWhereInput
+    orderBy?: player_deckOrderByWithRelationInput | player_deckOrderByWithRelationInput[]
+    cursor?: player_deckWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: Player_deckScalarFieldEnum | Player_deckScalarFieldEnum[]
   }
 
   /**
@@ -4997,6 +5012,7 @@ export namespace Prisma {
     name?: StringFilter<"users"> | string
     cash?: IntFilter<"users"> | number
     created_at?: DateTimeFilter<"users"> | Date | string
+
     inventory?: InventoryListRelationFilter
     player_deck?: XOR<Player_deckNullableRelationFilter, player_deckWhereInput> | null
     rank?: XOR<RankNullableRelationFilter, rankWhereInput> | null
@@ -5009,6 +5025,7 @@ export namespace Prisma {
     name?: SortOrder
     cash?: SortOrder
     created_at?: SortOrder
+
     inventory?: inventoryOrderByRelationAggregateInput
     player_deck?: player_deckOrderByWithRelationInput
     rank?: rankOrderByWithRelationInput
@@ -5024,6 +5041,7 @@ export namespace Prisma {
     name?: StringFilter<"users"> | string
     cash?: IntFilter<"users"> | number
     created_at?: DateTimeFilter<"users"> | Date | string
+
     inventory?: InventoryListRelationFilter
     player_deck?: XOR<Player_deckNullableRelationFilter, player_deckWhereInput> | null
     rank?: XOR<RankNullableRelationFilter, rankWhereInput> | null
@@ -5198,13 +5216,13 @@ export namespace Prisma {
 
   export type player_deckWhereUniqueInput = Prisma.AtLeast<{
     id?: number
-    user_id?: number
     AND?: player_deckWhereInput | player_deckWhereInput[]
     OR?: player_deckWhereInput[]
     NOT?: player_deckWhereInput | player_deckWhereInput[]
+    user_id?: IntFilter<"player_deck"> | number
     player_id?: IntFilter<"player_deck"> | number
     users?: XOR<UsersRelationFilter, usersWhereInput>
-  }, "id" | "user_id">
+  }, "id">
 
   export type player_deckOrderByWithAggregationInput = {
     id?: SortOrder
@@ -5496,14 +5514,19 @@ export namespace Prisma {
     none?: inventoryWhereInput
   }
 
-  export type Player_deckNullableRelationFilter = {
-    is?: player_deckWhereInput | null
-    isNot?: player_deckWhereInput | null
+  export type Player_deckListRelationFilter = {
+    every?: player_deckWhereInput
+    some?: player_deckWhereInput
+    none?: player_deckWhereInput
   }
 
   export type RankNullableRelationFilter = {
     is?: rankWhereInput | null
     isNot?: rankWhereInput | null
+  }
+
+  export type player_deckOrderByRelationAggregateInput = {
+    _count?: SortOrder
   }
 
   export type inventoryOrderByRelationAggregateInput = {
@@ -5724,10 +5747,11 @@ export namespace Prisma {
     connect?: inventoryWhereUniqueInput | inventoryWhereUniqueInput[]
   }
 
-  export type player_deckCreateNestedOneWithoutUsersInput = {
-    create?: XOR<player_deckCreateWithoutUsersInput, player_deckUncheckedCreateWithoutUsersInput>
-    connectOrCreate?: player_deckCreateOrConnectWithoutUsersInput
-    connect?: player_deckWhereUniqueInput
+  export type player_deckCreateNestedManyWithoutUsersInput = {
+    create?: XOR<player_deckCreateWithoutUsersInput, player_deckUncheckedCreateWithoutUsersInput> | player_deckCreateWithoutUsersInput[] | player_deckUncheckedCreateWithoutUsersInput[]
+    connectOrCreate?: player_deckCreateOrConnectWithoutUsersInput | player_deckCreateOrConnectWithoutUsersInput[]
+    createMany?: player_deckCreateManyUsersInputEnvelope
+    connect?: player_deckWhereUniqueInput | player_deckWhereUniqueInput[]
   }
 
   export type rankCreateNestedOneWithoutUsersInput = {
@@ -5742,6 +5766,7 @@ export namespace Prisma {
     createMany?: inventoryCreateManyUsersInputEnvelope
     connect?: inventoryWhereUniqueInput | inventoryWhereUniqueInput[]
   }
+
 
   export type player_deckUncheckedCreateNestedOneWithoutUsersInput = {
     create?: XOR<player_deckCreateWithoutUsersInput, player_deckUncheckedCreateWithoutUsersInput>
@@ -6050,6 +6075,7 @@ export namespace Prisma {
     data: XOR<inventoryUpdateManyMutationInput, inventoryUncheckedUpdateManyWithoutUsersInput>
   }
 
+
   export type inventoryScalarWhereInput = {
     AND?: inventoryScalarWhereInput | inventoryScalarWhereInput[]
     OR?: inventoryScalarWhereInput[]
@@ -6164,6 +6190,8 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string
     cash?: IntFieldUpdateOperationsInput | number
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+
+
     inventory?: inventoryUncheckedUpdateManyWithoutUsersNestedInput
     player_deck?: player_deckUncheckedUpdateOneWithoutUsersNestedInput
   }
@@ -6284,10 +6312,29 @@ export namespace Prisma {
     rank?: rankUncheckedUpdateOneWithoutUsersNestedInput
   }
 
+  export type player_deckCreateManyUsersInput = {
+    id?: number
+    player_id: number
+  }
+
   export type inventoryCreateManyUsersInput = {
     id?: number
     player_id: number
     count: number
+  }
+
+  export type player_deckUpdateWithoutUsersInput = {
+    player_id?: IntFieldUpdateOperationsInput | number
+  }
+
+  export type player_deckUncheckedUpdateWithoutUsersInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    player_id?: IntFieldUpdateOperationsInput | number
+  }
+
+  export type player_deckUncheckedUpdateManyWithoutUsersInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    player_id?: IntFieldUpdateOperationsInput | number
   }
 
   export type inventoryUpdateWithoutUsersInput = {

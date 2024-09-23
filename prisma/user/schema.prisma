@@ -9,12 +9,14 @@ datasource db {
 }
 
 model users {
+
   id          Int          @id @default(autoincrement()) @map("id")
   account     String       @unique @map("account") @db.VarChar(20)
   password    String       @map("password") 
   name        String       @map("name") @db.VarChar(20)
   cash        Int          @default(0)  @map("cash")
   created_at  DateTime     @default(now())  @map("created_at")
+  
   inventory   inventory[]
   player_deck player_deck[]
   rank        rank?
@@ -23,6 +25,7 @@ model users {
 }
 
 model rank {
+
   id        Int    @id @default(autoincrement()) @map("id")
   user_id   Int    @unique @map("user_id")
   rankpoint Int    @map("rankpoint")
@@ -48,6 +51,7 @@ model inventory {
 }
 
 model player_deck {
+
   id        Int   @id @default(autoincrement()) @map("id")
   user_id   Int   @map("user_id")
   player_id Int   @map("player_id")
