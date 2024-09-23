@@ -1,5 +1,5 @@
 import express from 'express';
-import { userDataClient } from '../src/utils/prisma/index.js';
+import { user_Data_Prisma } from '../src/utils/Rank_Sort.js';
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcrypt';
 import authMiddleware from '../src/middlewares/auth.middleware.js';
@@ -12,7 +12,7 @@ router.post('/sign-up', async (req, res, next) => {
     const { account, password, passwordCheck, name } = req.body;
 
     // 아이디가 이미 있는지 확인하는 함수
-    const isExistAccount = await userDataClient.users.findFirst({
+    const isExistAccount = await user_Data_Prisma.users.findFirst({
       where: {
         account,
       },
@@ -53,7 +53,7 @@ router.post('/sign-up', async (req, res, next) => {
     const hashedPassword = await bcrypt.hash(password, 10);
 
     // 테이블에 데이터 추가
-    await userDataClient.users.create({
+    await user_Data_Prisma.users.create({
       data: {
         account,
         password: hashedPassword,
@@ -71,7 +71,7 @@ router.post('/sign-up', async (req, res, next) => {
 router.post('/sign-in', async (req, res, next) => {
   const { account, password } = req.body;
 
-  const user = await userDataClient.users.findFirst({ where: { account } });
+  const user = await user_Data_Prisma.users.findFirst({ where: { account } });
 
   // 아이디가 존재하지 않을때 발생하는 오류
   if (!user) {
@@ -85,7 +85,7 @@ router.post('/sign-in', async (req, res, next) => {
 
   // jwt 토큰 발급
   const token = jwt.sign({ id: user.id }, 'turtle-secret-key');
-  res.cookie('authorization', `Bearer ${token}`);
+  res.header('authorization', `Bearer ${token}`);
 
   return res.status(200).json({ message: '로그인에 성공했습니다.' });
 });
@@ -96,7 +96,7 @@ router.post('/buy_cash/:id', authMiddleware, async (req, res, next) => {
   const { cash } = req.body;
 
   try {
-    const user = await userDataClient.users.findFirst({
+    const user = await user_Data_Prisma.users.findFirst({
       where: {
         id: +id,
       },
@@ -105,12 +105,12 @@ router.post('/buy_cash/:id', authMiddleware, async (req, res, next) => {
       return res.status(403).json({ message: '내 계정이 아닙니다.' });
     }
 
-    await userDataClient.users.update({
+    await user_Data_Prisma.users.update({
       where: { id: +id },
       data: { cash: { increment: cash } },
     });
 
-    const updatedUsers = await userDataClient.users.findUnique({
+    const updatedUsers = await user_Data_Prisma.users.findUnique({
       where: { id: +id },
       select: { cash: true },
     });

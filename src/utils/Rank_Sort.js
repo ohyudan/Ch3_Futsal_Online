@@ -1,6 +1,6 @@
 import { PrismaClient as UsersDataClient } from '../../prisma/user/generated/UserDataClient/index.js';
 
-const user_Data_Prisma = new UsersDataClient({
+export const user_Data_Prisma = new UsersDataClient({
   log: ['query', 'info', 'warn', 'error'],
 
   errorFormat: 'pretty',
