@@ -1,13 +1,7 @@
 import express from 'express';
-import { PrismaClient as PlayerDataClient } from '../prisma/game/generated/GameDataClient/index.js';
+import { gameDataClient } from '../src/utils/prisma/index.js';
 
 const router = express.Router();
-
-const player_Data_Prisma = new PlayerDataClient({
-  log: ['query', 'info', 'warn', 'error'],
-
-  errorFormat: 'pretty',
-});
 
 /** 선수 추가하기
  * // 관리자 계정일 때만 추가해야될 것같음. JWT 미구현
@@ -16,7 +10,7 @@ const player_Data_Prisma = new PlayerDataClient({
 router.post(`/newPlayer`, async (req, res, next) => {
   const { name, speed, shootpower, goal_finish, defense, stamina } = req.body;
   try {
-    const player = await player_Data_Prisma.player.create({
+    const player = await gameDataClient.player.create({
       data: {
         name,
         speed,

@@ -1,5 +1,5 @@
 import jwt from 'jsonwebtoken';
-import { user_Data_Prisma } from '../utils/Rank_Sort.js';
+import { userDataClient } from '../utils/prisma/index.js';
 
 // 인증 미들웨어
 export default async function (req, res, next) {
@@ -15,7 +15,7 @@ export default async function (req, res, next) {
     const decodedToken = jwt.verify(token, 'turtle-secret-key');
     const id = decodedToken.id;
 
-    const user = await user_Data_Prisma.users.findFirst({
+    const user = await userDataClient.users.findFirst({
       where: { id: +id },
     });
     if (!user) {
