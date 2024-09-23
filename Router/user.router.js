@@ -124,4 +124,124 @@ router.post('/buy_cash/:id', authMiddleware, async (req, res, next) => {
   }
 });
 
+// 내 선수 확인 API
+router.get('/myInventory/:id', authMiddleware, async (req, res, next) => {
+  const userId = parseInt(req.params.id, 10);
+
+  try {
+    const myPlayers = await userDataClient.inventory.findMany({
+      where: {
+        user_id: userId,
+      },
+      select: {
+        player_id: true,
+        count: true,
+      },
+    });
+
+    const response = [];
+    for (const myPlayer of myPlayers) {
+      const playerInformation = await gameDataClient.player.findUnique({
+        where: {
+          id: myPlayers.player_id,
+        },
+        select: {
+          name: true,
+        },
+      });
+      if (playerInformation) response.push(playerInformation);
+    }
+
+    return res.status(200).json(response);
+  } catch (err) {
+    next(err);
+  }
+});
+
+// 팀원 추가 API
+router.post('/inMyDeck/:id', authMiddleware, async (req, res, next) => {
+  const userId = parseInt(req.params.id, 10);
+  const { playerId } = req.body;
+
+  try {
+    const inventoryPlayer = await userDataClient.inventory.findFirst({
+      where: {
+        user_id: userId,
+        player_id: playerId,
+      },
+      select: {
+        count: true,
+      },
+    });
+
+    if (!inventoryPlayer)
+      return res
+        .status(400)
+        .json({ message: '선수를 보유하고 있지 않습니다.' });
+
+    await userDataClient.player_deck.create({
+      data: {
+        user_id: userId,
+        player_id: playerId,
+      },
+    });
+
+    // await userDataClient.inventory.update({
+    //   where: {
+    //     player_id: playerId,
+    //   },
+    //   data: {
+    //     count: {
+    //       decrement: 1,
+    //     },
+    //   },
+    // });
+
+    // if (inventoryPlayer.count === 0) {
+    //   await userDataClient.inventory.delete({
+    //     where: {
+    //       player_id: playerId,
+    //     },
+    //   });
+    // }
+    return res.status(201).json({ message: '선수를 덱에 추가하였습니다.' });
+  } catch (err) {
+    next(err);
+  }
+});
+
+// 대전 가능 상대 조회 API
+router.get('/ready_player/:id', async (req, res, next) => {
+  const userId = parseInt(req.params.id);
+
+  try {
+    const matchLevel = await userDataClient.rank.findMany({
+      where: {
+        AND: [
+          { rankpoint: userId.rankpoint + 100 },
+          { rankpoint: userId.rankpoint - 100 },
+        ],
+        NOT: { user_id: userId },
+      },
+      select: {
+        tier: true,
+        rankpoint: true,
+        win: true,
+        draw: true,
+        lose: true,
+      },
+      take: 10,
+    });
+
+    // 매칭 가능한 유저가 없을 경우
+    if (matchLevel.length === 0) {
+      return res.status(403).json({ message: '대전 가능한 상대가 없습니다.' });
+    }
+
+    return res.status(201).json(matchLevel);
+  } catch (err) {
+    next(err);
+  }
+});
+
 export default router;
