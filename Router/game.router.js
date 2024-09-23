@@ -51,7 +51,7 @@ router.post('/play/:id', authMiddleware, async (req, res, next) => {
         id,
         user_id: userA.id,
         rankpoint: 1000,
-        rank: 1, // 테이블에서 별도 작업을 해서 rankpoint에 의해 order by 되는 값이 되어야 함
+        rank: null,
         tier: 'silver',
         win: 0,
         draw: 0,
