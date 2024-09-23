@@ -66,7 +66,7 @@ router.get(`/getMyDeck/:user_id`, async (req, res, next) => {
       }
     })
     .catch((err) => {
-      return res.status(404).json({ message: err.message });
+      return res.status(500).json({ message: err.message });
     });
 });
 
@@ -83,7 +83,7 @@ router.post(`/outMyDeck/:user_id/:player_id`, async (req, res, next) => {
     const user_data = await serch_deck(user_id);
     // 덱 검사 1
     if (user_data.bool === false) {
-      return res.status(404).json(result.message);
+      return res.status(400).json(result.message);
     }
 
     //덱 검사 2
@@ -99,7 +99,7 @@ router.post(`/outMyDeck/:user_id/:player_id`, async (req, res, next) => {
       return res.status(404).json({ message: `덱에 없는 선수입니다.` });
     }
   } catch (err) {
-    res.status(404).json({ message: err.message });
+    res.status(500).json({ message: err.message });
   }
 });
 export default router;

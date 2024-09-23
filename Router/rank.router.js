@@ -19,7 +19,7 @@ router.get(`/ranking`, async (req, res, next) => {
     });
     res.status(200).json(rankings);
   } catch (err) {
-    res.status(404).json({ message: `${err.message}` });
+    res.status(500).json({ message: `${err.message}` });
   }
 });
 /** 유저 랭킹 단일 조회 GET
@@ -41,7 +41,7 @@ router.get(`/ranking/:user_id`, async (req, res, next) => {
     });
     return res.status(200).json({ player_rank });
   } catch (err) {
-    return res.status(404).json({ err: `${err.message}` });
+    return res.status(500).json({ err: `${err.message}` });
   }
 });
 /** 랭킹 정렬 및 업데이트

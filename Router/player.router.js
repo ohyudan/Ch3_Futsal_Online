@@ -35,7 +35,7 @@ router.post(`/newPlayer`, async (req, res, next) => {
     });
     return res.status(201).json({ data: player });
   } catch (err) {
-    return res.status(404).json({ err: `올바르지 않은 값입니다.` });
+    return res.status(400).json({ err: `올바르지 않은 값입니다.` });
   }
 });
 export default router;
