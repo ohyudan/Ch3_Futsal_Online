@@ -1,6 +1,7 @@
 import express from 'express';
 import { userDataClient } from '../src/utils/prisma/index.js';
 import { updateRankings } from '../src/utils/Rank_Sort.js';
+import adminAuthMiddleware from '../src/middlewares/admin.auth.middleware.js';
 
 const router = express.Router();
 /** 유저 랭킹 조회하기 GET
@@ -44,7 +45,7 @@ router.get(`/ranking/:user_id`, async (req, res, next) => {
  * 오유단
  * JWT
  */
-router.post(`/ranking/refresh`, async (req, res, next) => {
+router.post(`/ranking/refresh`, adminAuthMiddleware, async (req, res, next) => {
   try {
     // 계정 확인 추가
     updateRankings();

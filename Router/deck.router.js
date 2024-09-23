@@ -1,6 +1,7 @@
 import express from 'express';
 import { userDataClient } from '../src/utils/prisma/index.js';
 import { gameDataClient } from '../src/utils/prisma/index.js';
+import authMiddleware from '../src/middlewares/auth.middleware.js';
 const router = express.Router();
 
 /** 덱 확인 및 찾기
@@ -46,6 +47,7 @@ const serch_deck = async (user_id) => {
  */
 router.get(`/getMyDeck/:user_id`, async (req, res, next) => {
   const { user_id } = req.params;
+  console.log(user_id);
   serch_deck(user_id)
     .then((result) => {
       if (result.bool === true) {
@@ -64,23 +66,42 @@ router.get(`/getMyDeck/:user_id`, async (req, res, next) => {
  *
  * 플레이어 중복시 처리?
  */
-router.post(`/outMyDeck/:user_id/:player_id`, async (req, res, next) => {
-  const { user_id, player_id } = req.params;
-
-  //JWT
+router.post(`/outMyDeck/:player_id`, authMiddleware, async (req, res, next) => {
+  const { player_id } = req.params;
   try {
-    const user_data = await serch_deck(user_id);
+    const user_data = await serch_deck(req.account.id);
     // 덱 검사 1
     if (user_data.bool === false) {
-      return res.status(400).json(result.message);
+      return res.status(400).json(user_data.message);
     }
-
     //덱 검사 2
     if (user_data.deck_player.includes(+player_id)) {
       const index = user_data.deck_player.indexOf(+player_id);
-      const userdeck = await userDataClient.player_deck.delete({
+      //인벤토리 검사
+      const inventory = await userDataClient.inventory.findFirst({
+        where: {
+          user_id: +req.account.id,
+          player_id: +player_id,
+        },
+        select: {
+          id: true,
+          count: true,
+        },
+      });
+      if (inventory) {
+        await userDataClient.inventory.update({
+          where: { id: inventory.id },
+          data: { count: inventory.count + 1 },
+        });
+      } else {
+        await userDataClient.inventory.create({
+          data: { user_id: req.account.id, player_id: +player_id, count: 1 },
+        });
+      }
+      await userDataClient.player_deck.delete({
         where: { id: +user_data.deck_ids[index] },
       });
+
       return res.status(201).json({
         message: `${user_data.message[`선수${index + 1}`]}이(가) 팀에서 나갔습니다.`,
       });

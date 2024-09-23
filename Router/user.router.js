@@ -10,7 +10,6 @@ const router = express.Router();
 router.post('/sign-up', async (req, res, next) => {
   try {
     const { account, password, passwordCheck, name } = req.body;
-
     // 아이디가 이미 있는지 확인하는 함수
     const isExistAccount = await userDataClient.users.findFirst({
       where: {
@@ -84,7 +83,7 @@ router.post('/sign-in', async (req, res, next) => {
   }
 
   // jwt 토큰 발급
-  const token = jwt.sign({ id: user.id }, 'turtle-secret-key');
+  const token = jwt.sign({ id: user.id }, process.env.SECRET_KEY); //env로 변경
   res.header('authorization', `Bearer ${token}`);
 
   return res.status(200).json({ message: '로그인에 성공했습니다.' });
