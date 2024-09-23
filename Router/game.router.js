@@ -51,7 +51,7 @@ router.post('/play/:id', authMiddleware, async (req, res, next) => {
         id,
         user_id: userA.id,
         rankpoint: 1000,
-        rank: 1, // 테이블에서 별도 작업을 해서 rankpoint에 의해 order by 되는 값이 되어야 함
+        rank: null, // 테이블에서 별도 작업을 해서 rankpoint에 의해 order by 되는 값이 되어야 함
         tier: 'silver',
         win: 0,
         draw: 0,
@@ -98,7 +98,7 @@ router.post('/play/:id', authMiddleware, async (req, res, next) => {
       },
     });
     // deckB : [{'player_id':1},{'player_id':2},{'player_id':3}]
-    
+
     const MyAttack = await gameDataClient.player.findFirst({
       where: {
         id: deckA[0].player_id,
@@ -246,35 +246,35 @@ router.post('/play/:id', authMiddleware, async (req, res, next) => {
         const updatedTier = await userDataClient.rank.update({
           where: { id: userA.id },
           data: {
-            tier: 'Bronze'
+            tier: 'Bronze',
           },
         });
       } else if (updatedRank.rankpoint < 1100) {
         const updatedTier = await userDataClient.rank.update({
           where: { id: userA.id },
           data: {
-            tier: 'Silver'
+            tier: 'Silver',
           },
         });
       } else if (updatedRank.rankpoint < 1300) {
         const updatedTier = await userDataClient.rank.update({
           where: { id: userA.id },
           data: {
-            tier: 'Gold'
+            tier: 'Gold',
           },
         });
       } else if (updatedRank.rankpoint < 1500) {
         const updatedTier = await userDataClient.rank.update({
           where: { id: userA.id },
           data: {
-            tier: 'Platinum'
+            tier: 'Platinum',
           },
         });
       } else {
         const updatedTier = await userDataClient.rank.update({
           where: { id: userA.id },
           data: {
-            tier: 'Diamond'
+            tier: 'Diamond',
           },
         });
       }
@@ -299,35 +299,35 @@ router.post('/play/:id', authMiddleware, async (req, res, next) => {
         const updatedTier = await userDataClient.rank.update({
           where: { id: userA.id },
           data: {
-            tier: 'Bronze'
+            tier: 'Bronze',
           },
         });
       } else if (updatedRank.rankpoint < 1100) {
         const updatedTier = await userDataClient.rank.update({
           where: { id: userA.id },
           data: {
-            tier: 'Silver'
+            tier: 'Silver',
           },
         });
       } else if (updatedRank.rankpoint < 1300) {
         const updatedTier = await userDataClient.rank.update({
           where: { id: userA.id },
           data: {
-            tier: 'Gold'
+            tier: 'Gold',
           },
         });
       } else if (updatedRank.rankpoint < 1500) {
         const updatedTier = await userDataClient.rank.update({
           where: { id: userA.id },
           data: {
-            tier: 'Platinum'
+            tier: 'Platinum',
           },
         });
       } else {
         const updatedTier = await userDataClient.rank.update({
           where: { id: userA.id },
           data: {
-            tier: 'Diamond'
+            tier: 'Diamond',
           },
         });
       }

@@ -12,13 +12,6 @@ const player_Data_Prisma = new PlayerDataClient({
 /** 선수 추가하기
  * // 관리자 계정일 때만 추가해야될 것같음. JWT 미구현
  *오유단
- *"id":int
- *"name": varchar,
- *"speed": int,
- *"shootpower": int,
- *"goal_finish": int,
- *"defense": int,
- *"stamina": int
  */
 router.post(`/newPlayer`, async (req, res, next) => {
   const { name, speed, shootpower, goal_finish, defense, stamina } = req.body;

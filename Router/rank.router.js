@@ -1,6 +1,6 @@
 import express from 'express';
 import { PrismaClient as UsersDataClient } from '../prisma/user/generated/UserDataClient/index.js';
-import { updateRankings } from '../src/utills/Rank_Sort.js';
+import { updateRankings } from '../src/utils/Rank_Sort.js';
 const user_Data_Prisma = new UsersDataClient({
   log: ['query', 'info', 'warn', 'error'],
   errorFormat: 'pretty',
