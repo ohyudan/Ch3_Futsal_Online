@@ -118,7 +118,7 @@ const config = {
       "value": "prisma-client-js"
     },
     "output": {
-      "value": "/Users/yudanoh/Ch3_Team_Project/prisma/game/generated/GameDataClient",
+      "value": "A:\\Javascript\\teamproject1\\Ch3_Futsal_Online\\prisma\\game\\generated\\GameDataClient",
       "fromEnvVar": null
     },
     "config": {
@@ -127,12 +127,12 @@ const config = {
     "binaryTargets": [
       {
         "fromEnvVar": null,
-        "value": "darwin-arm64",
+        "value": "windows",
         "native": true
       }
     ],
     "previewFeatures": [],
-    "sourceFilePath": "/Users/yudanoh/Ch3_Team_Project/prisma/game/schema.prisma",
+    "sourceFilePath": "A:\\Javascript\\teamproject1\\Ch3_Futsal_Online\\prisma\\game\\schema.prisma",
     "isCustomOutput": true
   },
   "relativeEnvPaths": {
@@ -145,6 +145,7 @@ const config = {
     "db"
   ],
   "activeProvider": "mysql",
+  "postinstall": false,
   "inlineDatasources": {
     "db": {
       "url": {
@@ -192,8 +193,9 @@ exports.PrismaClient = PrismaClient
 Object.assign(exports, Prisma)
 
 // file annotations for bundling tools to include these files
-path.join(__dirname, "libquery_engine-darwin-arm64.dylib.node");
-path.join(process.cwd(), "generated/GameDataClient/libquery_engine-darwin-arm64.dylib.node")
+
+path.join(__dirname, "query_engine-windows.dll.node");
+path.join(process.cwd(), "prisma/game/generated/GameDataClient/query_engine-windows.dll.node")
 // file annotations for bundling tools to include these files
 path.join(__dirname, "schema.prisma");
 path.join(process.cwd(), "generated/GameDataClient/schema.prisma")

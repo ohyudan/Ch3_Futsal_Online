@@ -117,7 +117,7 @@ const config = {
       "value": "prisma-client-js"
     },
     "output": {
-      "value": "/Users/yudanoh/Ch3_Team_Project/prisma/game/generated/GameDataClient",
+      "value": "A:\\Javascript\\teamproject1\\Ch3_Futsal_Online\\prisma\\game\\generated\\GameDataClient",
       "fromEnvVar": null
     },
     "config": {
@@ -126,12 +126,12 @@ const config = {
     "binaryTargets": [
       {
         "fromEnvVar": null,
-        "value": "darwin-arm64",
+        "value": "windows",
         "native": true
       }
     ],
     "previewFeatures": [],
-    "sourceFilePath": "/Users/yudanoh/Ch3_Team_Project/prisma/game/schema.prisma",
+    "sourceFilePath": "A:\\Javascript\\teamproject1\\Ch3_Futsal_Online\\prisma\\game\\schema.prisma",
     "isCustomOutput": true
   },
   "relativeEnvPaths": {
@@ -144,6 +144,7 @@ const config = {
     "db"
   ],
   "activeProvider": "mysql",
+  "postinstall": false,
   "inlineDatasources": {
     "db": {
       "url": {
