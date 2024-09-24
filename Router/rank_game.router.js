@@ -85,6 +85,7 @@ router.post('/rank_game/', authMiddleware, async (req, res, next) => {
     // 해당 유저들의 리스트에서 랜덤한 대상과의 매치 추첨
     const rankB = HaveDeckplayer[Math.floor((HaveDeckplayer.length) * Math.random())];
     // 랜덤으로 잡은 범위내의 유저의 id와 rankpoint
+    // 여기서 오류 한번 더나면 [Math.floor((HaveDeckplayer.length - 1) * Math.random())]; 로 한번 바꿔서 해봐주세요
     // ex) rankB = {user_id : 1, rankpoint : 987}
 
     const deckB = await userDataClient.player_deck.findMany({

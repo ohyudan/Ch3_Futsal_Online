@@ -16,13 +16,24 @@ const router = express.Router();
 // 2-3 . 적용된 가중치를 통한 플레이 진행
 // 3. 플레이 후 승패에 따른 점수 변동
 router.post('/custom_game/:id', authMiddleware, async (req, res, next) => {
+
   const { id }  = req.params;
   const enemy_id = req.body.id;
 
-  console.log(id);
-  console.log(enemy_id);
 
   try {
+    const userA = userDataClient.users.findUnique({
+      where: {
+        id: account_id,
+      },
+      select: {
+        id: true
+      }
+    });
+
+    console.log(userA.id);
+    console.log(account_id)
+
     const deckA = await userDataClient.player_deck.findMany({
       where: {
         user_id: +id,
@@ -32,9 +43,9 @@ router.post('/custom_game/:id', authMiddleware, async (req, res, next) => {
       },
     });
     // deckA : [{'player_id':1},{'player_id':2},{'player_id':3}]
-
+    console.log(deckA);
     // 팀을 만들지 않았을 경우
-    if (deckA.length !== 3) {
+    if (deckA.length < 3) {
       return res.status(409).json({ message: '덱이 작성되지 않았습니다.' });
     }
 
@@ -47,7 +58,7 @@ router.post('/custom_game/:id', authMiddleware, async (req, res, next) => {
       },
     });
     // deckB : [{'player_id':1},{'player_id':2},{'player_id':3}]
-    if (deckB.length !== 3) {
+    if (deckB.length < 3) {
       return res
         .status(409)
         .json({ message: '상대의 덱이 작성되지 않았습니다.' });
@@ -183,12 +194,12 @@ router.post('/custom_game/:id', authMiddleware, async (req, res, next) => {
     const maxScore = scoreA + scoreB;
     const randomValue = Math.random() * maxScore;
 
-    if (randomValue < scoreA) {  
-      // 승리         
+    if (randomValue < scoreA) {
+      // 승리
       return res.status(200).json({
         message: `승리하였습니다`,
       });
-    } else if (randomValue === scoreA) {      
+    } else if (randomValue === scoreA) {
       // 무승부
       return res.status(200).json({
         message: `무승부하였습니다`,
