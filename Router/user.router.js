@@ -4,7 +4,7 @@ import { gameDataClient } from '../src/utils/prisma/index.js';
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcrypt';
 import authMiddleware from '../src/middlewares/auth.middleware.js';
-
+import { gameDataClient } from '../src/utils/prisma/index.js';
 const router = express.Router();
 
 // 회원가입 API
@@ -53,7 +53,7 @@ router.post('/sign-up', async (req, res, next) => {
     const hashedPassword = await bcrypt.hash(password, 10);
 
     // 테이블에 데이터 추가
-    await userDataClient.users.create({
+    const user = await userDataClient.users.create({
       data: {
         account,
         password: hashedPassword,
@@ -61,6 +61,16 @@ router.post('/sign-up', async (req, res, next) => {
       },
     });
 
+    await userDataClient.rank.create({
+      data: {
+        user_id: user.id,
+        rank: null, // 테이블에서 별도 작업을 해서 rankpoint에 의해 order by 되는 값이 되어야 함
+        tier: 'Bronze',
+        win: 0,
+        draw: 0,
+        lose: 0,
+      },
+    });
     return res.status(201).json({ message: `회원가입이 완료되었습니다.` });
   } catch (err) {
     next(err);
@@ -147,6 +157,7 @@ router.get('/myInventory/:id', authMiddleware, async (req, res, next) => {
         },
         select: {
           name: true,
+          count: true,
         },
       });
 
@@ -171,12 +182,12 @@ router.post('/inMyDeck/:id', authMiddleware, async (req, res, next) => {
     const playerDeck = await userDataClient.player_deck.findMany({
       where: {
         user_id: userId,
+        player_id: player_id,
       },
       select: {
         id: true,
       },
     });
-
     if (Object.values(playerDeck).length === 3) {
       return res.status(401).json({ message: '덱 구성이 완료되었습니다.' });
     } else {
@@ -226,6 +237,7 @@ router.post('/inMyDeck/:id', authMiddleware, async (req, res, next) => {
 
       return res.status(201).json({ message: '선수를 덱에 추가하였습니다.' });
     }
+
   } catch (err) {
     next(err);
   }
@@ -234,7 +246,6 @@ router.post('/inMyDeck/:id', authMiddleware, async (req, res, next) => {
 // 대전 가능 상대 조회 API
 router.get('/ready_user', async (req, res, next) => {
   const userId = req.user.id;
-
   try {
     const matchLevel = await userDataClient.rank.findMany({
       where: {
