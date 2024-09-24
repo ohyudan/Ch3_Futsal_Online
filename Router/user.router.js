@@ -180,14 +180,30 @@ router.post('/inMyDeck/:id', authMiddleware, async (req, res, next) => {
     const playerDeck = await userDataClient.player_deck.findMany({
       where: {
         user_id: userId,
+      },
+      select: {
+        id: true,
+      },
+    });
+
+    const playerDuplicate = await userDataClient.player_deck.findMany({
+      where: {
+        user_id: userId,
         player_id: player_id,
       },
       select: {
         id: true,
       },
     });
-    if (Object.values(playerDeck).length === 3) {
-      return res.status(401).json({ message: '덱 구성이 완료되었습니다.' });
+
+    if (Object.values(playerDeck).length >= 3) {
+      return res.status(401).json({
+        message: '덱에는 선수를 3명까지만 추가할 수 있습니다.',
+      });
+    } else if (Object.values(playerDuplicate).length >= 1) {
+      return res
+        .status(401)
+        .json({ message: '덱에는 중복 선수를 추가할 수 없습니다.' });
     } else {
       const inventoryPlayer = await userDataClient.inventory.findFirst({
         where: {
