@@ -22,18 +22,6 @@ router.post('/custom_game/:id', authMiddleware, async (req, res, next) => {
 
 
   try {
-    const userA = userDataClient.users.findUnique({
-      where: {
-        id: account_id,
-      },
-      select: {
-        id: true
-      }
-    });
-
-    console.log(userA.id);
-    console.log(account_id)
-
     const deckA = await userDataClient.player_deck.findMany({
       where: {
         user_id: +id,
