@@ -276,7 +276,7 @@ router.post('/gacha/:id', authMiddleware, async (req, res) => {
       pickedPlayer.push(findPlayer);
     }
 
-    // gatcha 결과값 res return
+    // gacha 결과값 res return
     return res.status(200).json({
       message: '카드팩 구매에 성공했습니다.',
       cash: upDatedUser.cash,
