@@ -45,23 +45,7 @@ router.post('/play/:id', authMiddleware, async (req, res, next) => {
         user_id: userA.id,
       },
     });
-
-    if (!rankA) {
-      const rankA = await userDataClient.rank.create({
-        id,
-        user_id: userA.id,
-        rankpoint: 1000,
-        rank: null, // 테이블에서 별도 작업을 해서 rankpoint에 의해 order by 되는 값이 되어야 함
-        tier: 'silver',
-        win: 0,
-        draw: 0,
-        lose: 0,
-      });
-    }
-    // rank못찾으면 create 해야하는지?
-    // create에 있는 값들을 제외하면 나머지 값에 의한 변동값 id:index, rank,tier: rankpoint에 의한 변동값..
-    // 이거 어디서 씀? 하면 여긴데? 조회 말고는
-    // 만약 유저 생성할 때 랭크를 같이 생성하면 안해도 되는거고, 아니면 여기서 해야해
+    
 
     // 비슷한 rank점수를 가지고 있는 플레이어와 잡아주기
     // 자신의 랭크점수 +-100 안의 유저들의 리스트 생성
@@ -242,28 +226,28 @@ router.post('/play/:id', authMiddleware, async (req, res, next) => {
           win: rankA.win + 1,
         },
       });
-      if (updatedRank.rankpoint < 900) {
+      if (updatedRank.rankpoint < 1100) {
         const updatedTier = await userDataClient.rank.update({
           where: { id: userA.id },
           data: {
             tier: 'Bronze',
           },
         });
-      } else if (updatedRank.rankpoint < 1100) {
+      } else if (updatedRank.rankpoint < 1300) {
         const updatedTier = await userDataClient.rank.update({
           where: { id: userA.id },
           data: {
             tier: 'Silver',
           },
         });
-      } else if (updatedRank.rankpoint < 1300) {
+      } else if (updatedRank.rankpoint < 1500) {
         const updatedTier = await userDataClient.rank.update({
           where: { id: userA.id },
           data: {
             tier: 'Gold',
           },
         });
-      } else if (updatedRank.rankpoint < 1500) {
+      } else if (updatedRank.rankpoint < 1700) {
         const updatedTier = await userDataClient.rank.update({
           where: { id: userA.id },
           data: {
@@ -306,28 +290,28 @@ router.post('/play/:id', authMiddleware, async (req, res, next) => {
           lose: rankA.lose + 1,
         },
       });
-      if (updatedRank.rankpoint < 900) {
+      if (updatedRank.rankpoint < 1100) {
         const updatedTier = await userDataClient.rank.update({
           where: { id: userA.id },
           data: {
             tier: 'Bronze',
           },
         });
-      } else if (updatedRank.rankpoint < 1100) {
+      } else if (updatedRank.rankpoint < 1300) {
         const updatedTier = await userDataClient.rank.update({
           where: { id: userA.id },
           data: {
             tier: 'Silver',
           },
         });
-      } else if (updatedRank.rankpoint < 1300) {
+      } else if (updatedRank.rankpoint < 1500) {
         const updatedTier = await userDataClient.rank.update({
           where: { id: userA.id },
           data: {
             tier: 'Gold',
           },
         });
-      } else if (updatedRank.rankpoint < 1500) {
+      } else if (updatedRank.rankpoint < 1700) {
         const updatedTier = await userDataClient.rank.update({
           where: { id: userA.id },
           data: {
