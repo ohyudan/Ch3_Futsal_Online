@@ -1,12 +1,12 @@
 import express from 'express';
 
-import deck from './Router/deck.router.js';
-import player from './Router/player.router.js';
-import rank from './Router/rank.router.js';
+import deck from '../Router/deck.router.js';
+import player from '../Router/player.router.js';
+import rank from '../Router/rank.router.js';
 import cookieParser from 'cookie-parser';
-import UsersRouter from './Router/user.router.js';
-import GatchaRouter from './Router/gatcha.router.js';
-import ErrorHandlingMiddleware from './src/middlewares/error-handling.middleware.js';
+import UsersRouter from '../Router/user.router.js';
+import GatchaRouter from '../Router/gatcha.router.js';
+import ErrorHandlingMiddleware from './middlewares/error-handling.middleware.js';
 
 const app = express();
 const PORT = 3000;
