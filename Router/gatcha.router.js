@@ -1,12 +1,12 @@
 import express from 'express';
-import { userDataClient } from '../src/utils/prisma/index.js';
 import { gameDataClient } from '../src/utils/prisma/index.js';
+import { userDataClient } from '../src/utils/prisma/index.js';
 import authMiddleware from '../src/middlewares/auth.middleware.js';
 
 const router = express.Router();
 
 /** 카드팩 등록 API **/
-router.post('/pack', async (req, res) => {
+router.post('/pack', authMiddleware, async (req, res) => {
   const { type, price } = req.body;
 
   try {
@@ -40,7 +40,7 @@ router.post('/pack', async (req, res) => {
 });
 
 /** 카드팩 목록 조회 API **/
-router.get('/packs', async (req, res) => {
+router.get('/packs', authMiddleware, async (req, res) => {
   try {
     const packs = await gameDataClient.packs.findMany({
       select: {
@@ -55,6 +55,43 @@ router.get('/packs', async (req, res) => {
     return res
       .status(500)
       .json({ message: '카드팩 조회 중 에러가 발생하였습니다.' });
+  }
+});
+
+/** 카드팩 수정 API **/
+router.put('/packs/:id', authMiddleware, async (req, res) => {
+  const packId = parseInt(req.params.id, 10);
+  const { type, price } = req.body;
+
+  try {
+    const existingPack = await gameDataClient.packs.findUnique({
+      where: {
+        id: packId,
+      },
+    });
+
+    if (!existingPack) {
+      return res.status(404).json({ message: '존재하지 않는 카드팩입니다.' });
+    }
+
+    const updatedPack = await gameDataClient.packs.update({
+      where: {
+        id: packId,
+      },
+      data: {
+        type,
+        price,
+      },
+    });
+
+    return res
+      .status(200)
+      .json({ message: '카드팩이 정상적으로 수정되었습니다.', updatedPack });
+  } catch (error) {
+    console.error('카드팩 수정 중 에러 발생:', error);
+    return res
+      .status(500)
+      .json({ message: '카드팩 수정 중 에러가 발생하였습니다.' });
   }
 });
 
@@ -153,42 +190,43 @@ router.post('/gacha/:id', authMiddleware, async (req, res) => {
     }
 
     // 인벤토리에서 보유 중인 선수 확인 후, 업데이트 or 생성
-    for (const newPlayer of packResult) {
-      const isExistPlayer = await userDataClient.inventory.findFirst({
-        where: {
-          user_id: +id,
-          player_id: +newPlayer,
-        },
-      });
-
-      if (isExistPlayer) {
-        await userDataClient.inventory.update({
+    await userDataClient.$transaction(async (userDataClient) => {
+      for (const newPlayer of packResult) {
+        const isExistPlayer = await userDataClient.inventory.findFirst({
           where: {
-            id: isExistPlayer.id,
             user_id: +id,
             player_id: +newPlayer,
           },
-          data: {
-            count: isExistPlayer.count + 1,
-          },
         });
-      } else {
-        await userDataClient.inventory.create({
-          data: {
-            user_id: +id,
-            player_id: +newPlayer,
-            count: 1,
-          },
-        });
+
+        if (isExistPlayer) {
+          await userDataClient.inventory.update({
+            where: {
+              id: isExistPlayer.id,
+              user_id: +id,
+              player_id: +newPlayer,
+            },
+            data: {
+              count: isExistPlayer.count + 1,
+            },
+          });
+        } else {
+          await userDataClient.inventory.create({
+            data: {
+              user_id: +id,
+              player_id: +newPlayer,
+              count: 1,
+            },
+          });
+        }
       }
-    }
 
-    // 캐시 차감
-    await userDataClient.users.update({
-      where: { id: +id },
-      data: { cash: { decrement: totalCost } },
+      // 캐시 차감
+      await userDataClient.users.update({
+        where: { id: +id },
+        data: { cash: { decrement: totalCost } },
+      });
     });
-
     // 캐시 차감 결과 조회
     const upDatedUser = await userDataClient.users.findUnique({
       where: { id: +id },
