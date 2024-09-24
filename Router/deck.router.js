@@ -1,18 +1,8 @@
 import express from 'express';
-import { PrismaClient as PlayerDataClient } from '../prisma/game/generated/GameDataClient/index.js';
-import { PrismaClient as UsersDataClient } from '../prisma/user/generated/UserDataClient/index.js';
+import { userDataClient } from '../src/utils/prisma/index.js';
+import { gameDataClient } from '../src/utils/prisma/index.js';
+import authMiddleware from '../src/middlewares/auth.middleware.js';
 const router = express.Router();
-
-const player_Data_Prisma = new PlayerDataClient({
-  log: ['query', 'info', 'warn', 'error'],
-
-  errorFormat: 'pretty',
-});
-const user_Data_Prisma = new UsersDataClient({
-  log: ['query', 'info', 'warn', 'error'],
-
-  errorFormat: 'pretty',
-});
 
 /** 덱 확인 및 찾기
  * 오유단
@@ -21,7 +11,7 @@ const user_Data_Prisma = new UsersDataClient({
  */
 const serch_deck = async (user_id) => {
   const result = {};
-  const deck_account_id = await user_Data_Prisma.player_deck.findMany({
+  const deck_account_id = await userDataClient.player_deck.findMany({
     where: { user_id: +user_id },
     select: {
       player_id: true,
@@ -37,7 +27,7 @@ const serch_deck = async (user_id) => {
   const players_name = {};
   // 선수 이름 검색
   for (let i = 0; i < deck_account_id.length; i++) {
-    const player = await player_Data_Prisma.player.findUnique({
+    const player = await gameDataClient.player.findUnique({
       where: { id: deck_account_id[i].player_id },
       select: {
         name: true,
@@ -57,6 +47,7 @@ const serch_deck = async (user_id) => {
  */
 router.get(`/getMyDeck/:user_id`, async (req, res, next) => {
   const { user_id } = req.params;
+  console.log(user_id);
   serch_deck(user_id)
     .then((result) => {
       if (result.bool === true) {
@@ -75,23 +66,42 @@ router.get(`/getMyDeck/:user_id`, async (req, res, next) => {
  *
  * 플레이어 중복시 처리?
  */
-router.post(`/outMyDeck/:user_id/:player_id`, async (req, res, next) => {
-  const { user_id, player_id } = req.params;
-
-  //JWT
+router.post(`/outMyDeck/:player_id`, authMiddleware, async (req, res, next) => {
+  const { player_id } = req.params;
   try {
-    const user_data = await serch_deck(user_id);
+    const user_data = await serch_deck(req.account.id);
     // 덱 검사 1
     if (user_data.bool === false) {
-      return res.status(400).json(result.message);
+      return res.status(400).json(user_data.message);
     }
-
     //덱 검사 2
     if (user_data.deck_player.includes(+player_id)) {
       const index = user_data.deck_player.indexOf(+player_id);
-      const userdeck = await user_Data_Prisma.player_deck.delete({
+      //인벤토리 검사
+      const inventory = await userDataClient.inventory.findFirst({
+        where: {
+          user_id: +req.account.id,
+          player_id: +player_id,
+        },
+        select: {
+          id: true,
+          count: true,
+        },
+      });
+      if (inventory) {
+        await userDataClient.inventory.update({
+          where: { id: inventory.id },
+          data: { count: inventory.count + 1 },
+        });
+      } else {
+        await userDataClient.inventory.create({
+          data: { user_id: req.account.id, player_id: +player_id, count: 1 },
+        });
+      }
+      await userDataClient.player_deck.delete({
         where: { id: +user_data.deck_ids[index] },
       });
+
       return res.status(201).json({
         message: `${user_data.message[`선수${index + 1}`]}이(가) 팀에서 나갔습니다.`,
       });

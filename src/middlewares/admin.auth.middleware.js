@@ -2,6 +2,7 @@ import jwt from 'jsonwebtoken';
 import { userDataClient } from '../utils/prisma/index.js';
 import dotenv from 'dotenv';
 
+dotenv.config();
 // 인증 미들웨어
 export default async function (req, res, next) {
   try {
@@ -23,6 +24,9 @@ export default async function (req, res, next) {
       throw new Error('토큰 사용자가 존재하지 않습니다.');
     }
 
+    if (!(process.env.ADMIN == user.account)) {
+      throw new Error('관리자가 아닙니다.');
+    }
     req.account = user;
     next();
   } catch (error) {

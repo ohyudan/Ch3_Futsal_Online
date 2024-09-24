@@ -1,10 +1,4 @@
-import { PrismaClient as UsersDataClient } from '../../prisma/user/generated/UserDataClient/index.js';
-
-export const user_Data_Prisma = new UsersDataClient({
-  log: ['query', 'info', 'warn', 'error'],
-
-  errorFormat: 'pretty',
-});
+import { userDataClient } from './prisma/index.js';
 
 /** 랭킹 정렬 및 업데이트
  * 오유단
@@ -13,7 +7,7 @@ export const user_Data_Prisma = new UsersDataClient({
  */
 export async function updateRankings() {
   //정렬한 값을 받고
-  const rankings = await user_Data_Prisma.rank.findMany({
+  const rankings = await userDataClient.rank.findMany({
     orderBy: {
       rankpoint: 'desc',
     },
@@ -21,7 +15,7 @@ export async function updateRankings() {
 
   //map으로 업데이트 준비
   const updatePromises = rankings.map((ranking, index) => {
-    return user_Data_Prisma.rank.update({
+    return userDataClient.rank.update({
       where: { id: ranking.id }, // 각 랭킹의 고유 ID로 업데이트
       data: {
         rank: index + 1,
