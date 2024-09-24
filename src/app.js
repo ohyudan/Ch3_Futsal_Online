@@ -5,7 +5,7 @@ import player from '../Router/player.router.js';
 import rank from '../Router/rank.router.js';
 import cookieParser from 'cookie-parser';
 import UsersRouter from '../Router/user.router.js';
-import GatchaRouter from '../Router/gatcha.router.js';
+import GachaRouter from '../Router/gacha.router.js';
 import ErrorHandlingMiddleware from './middlewares/error-handling.middleware.js';
 import custom_game from '../Router/custom_game.router.js';
 import rank_game from '../Router/rank_game.router.js'
@@ -19,7 +19,7 @@ app.use('/api', [deck, player, rank, custom_game, rank_game]);
 
 app.use(cookieParser());
 
-app.use('/api', [UsersRouter, GatchaRouter]);
+app.use('/api', [UsersRouter, GachaRouter]);
 app.use(ErrorHandlingMiddleware);
 
 app.listen(PORT, () => {
