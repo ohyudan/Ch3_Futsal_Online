@@ -7,13 +7,13 @@ import cookieParser from 'cookie-parser';
 import UsersRouter from '../Router/user.router.js';
 import GatchaRouter from '../Router/gatcha.router.js';
 import ErrorHandlingMiddleware from './middlewares/error-handling.middleware.js';
-
+import gamerouter from '../Router/game.router.js';
 const app = express();
 const PORT = 3000;
 
 app.use(express.json());
 
-app.use('/api', [deck, player, rank]);
+app.use('/api', [deck, player, rank, gamerouter]);
 
 app.use(cookieParser());
 
