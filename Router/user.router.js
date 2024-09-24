@@ -4,6 +4,7 @@ import jwt from 'jsonwebtoken';
 import bcrypt from 'bcrypt';
 import authMiddleware from '../src/middlewares/auth.middleware.js';
 import { gameDataClient } from '../src/utils/prisma/index.js';
+import { match_ } from '../src/utils/match.js';
 const router = express.Router();
 
 // 회원가입 API
@@ -257,36 +258,12 @@ router.post('/inMyDeck/:id', authMiddleware, async (req, res, next) => {
 });
 
 // 대전 가능 상대 조회 API
-router.get('/ready_user', async (req, res, next) => {
-  const userId = req.user.id;
+router.get('/ready_user', authMiddleware, async (req, res, next) => {
   try {
-    const matchLevel = await userDataClient.rank.findMany({
-      where: {
-        AND: [
-          { rankpoint: userId.rankpoint + 100 },
-          { rankpoint: userId.rankpoint - 100 },
-        ],
-        NOT: { user_id: userId },
-      },
-      select: {
-        tier: true,
-        rankpoint: true,
-        win: true,
-        draw: true,
-        lose: true,
-      },
-      take: 10,
-    });
-
-    // 매칭 가능한 유저가 없을 경우
-    if (matchLevel.length === 0) {
-      return res.status(403).json({ message: '대전 가능한 상대가 없습니다.' });
-    }
-
-    return res.status(201).json(matchLevel);
+    const result = await match_(req.account.id);
+    return res.status(201).json(result);
   } catch (err) {
     next(err);
   }
 });
-
 export default router;
