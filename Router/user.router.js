@@ -4,7 +4,6 @@ import { gameDataClient } from '../src/utils/prisma/index.js';
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcrypt';
 import authMiddleware from '../src/middlewares/auth.middleware.js';
-import { gameDataClient } from '../src/utils/prisma/index.js';
 const router = express.Router();
 
 // 회원가입 API
@@ -222,18 +221,26 @@ router.post('/inMyDeck/:id', authMiddleware, async (req, res, next) => {
 });
 
 // 대전 가능 상대 조회 API
-router.get('/ready_user/:id', async (req, res, next) => {
-  const userId = parseInt(req.params.id);
+router.get('/ready_user', authMiddleware, async (req, res, next) => {
+  const userId = req.account.id;
   try {
+    const myrankpoint = await userDataClient.rank.findUnique({
+      where: { user_id: userId },
+      select: {
+        rankpoint: true,
+      },
+    });
+
     const matchLevel = await userDataClient.rank.findMany({
       where: {
-        AND: [
-          { rankpoint: userId.rankpoint + 100 },
-          { rankpoint: userId.rankpoint - 100 },
-        ],
+        rankpoint: {
+          gte: myrankpoint.rankpoint - 100,
+          lte: myrankpoint.rankpoint + 100,
+        },
         NOT: { user_id: userId },
       },
       select: {
+        user_id: true,
         tier: true,
         rankpoint: true,
         win: true,
@@ -247,8 +254,9 @@ router.get('/ready_user/:id', async (req, res, next) => {
     if (matchLevel.length === 0) {
       return res.status(403).json({ message: '대전 가능한 상대가 없습니다.' });
     }
-
-    return res.status(201).json(matchLevel);
+    let random_Int = Math.floor(Math.random() * (matchLevel.length - 0) + 0);
+    const result = matchLevel[random_Int];
+    return res.status(201).json(result);
   } catch (err) {
     next(err);
   }

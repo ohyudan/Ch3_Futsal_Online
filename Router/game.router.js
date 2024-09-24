@@ -4,7 +4,6 @@ import { userDataClient } from '../src/utils/prisma/index.js';
 import authMiddleware from '../src/middlewares/auth.middleware.js';
 
 const router = express.Router();
-
 // 게임 플레이 api
 // 0. 플레이어의 덱 정보 확인
 // 0-1. 플레이어의 덱이 완성되어 있는가
@@ -17,7 +16,7 @@ const router = express.Router();
 // 3. 플레이 후 승패에 따른 점수 변동
 router.post('/play/:id', authMiddleware, async (req, res, next) => {
   const { id } = req.params;
-
+  const myid = req.accout.id;
   try {
     const userA = await userDataClient.users.findFirst({
       where: {
@@ -45,34 +44,36 @@ router.post('/play/:id', authMiddleware, async (req, res, next) => {
         user_id: userA.id,
       },
     });
-    
 
     // 비슷한 rank점수를 가지고 있는 플레이어와 잡아주기
     // 자신의 랭크점수 +-100 안의 유저들의 리스트 생성
-    const Matchlevel = await userDataClient.rank.findMany({
-      where: {
-        AND: [
-          { rankpoint: { lt: rankA.rankpoint + 100 } },
-          { rankpoint: { gt: rankA.rankpoint - 100 } },
-        ],
-        NOT: { user_id: userA.id },
-      },
-      select: {
-        user_id: true,
-        rankpoint: true,
-      },
-    });
-
+    // console.log('중간3');
+    // const Matchlevel = await userDataClient.rank.findMany({
+    //   where: {
+    //     AND: [
+    //       { rankpoint: { lt: rankA.rankpoint + 100 } },
+    //       { rankpoint: { gt: rankA.rankpoint - 100 } },
+    //     ],
+    //     NOT: { user_id: userA.id },
+    //   },
+    //   select: {
+    //     user_id: true,
+    //     rankpoint: true,
+    //   },
+    // });
     // 매칭이 가능한 유저가 없을 경우
-    if (Matchlevel.length === 0) {
-      return res.status(409).json({ message: '대전 가능한 상대가 없습니다.' });
-    }
+    // if (Matchlevel.length === 0) {
+    //   return res.status(409).json({ message: '대전 가능한 상대가 없습니다.' });
+    // }
 
     // 해당 유저들의 리스트에서 랜덤한 대상과의 매치 추첨
-    const rankB = Matchlevel[Math.floor(Matchlevel.length * Math.random())];
+    //const rankB = Matchlevel[Math.floor(Matchlevel.length * Math.random())];
     // 랜덤으로 잡은 범위내의 유저의 id와 rankpoint
     // ex) rankB = {user_id : 1, rankpoint : 987}
 
+    //---- 여기서 못찾고 있음 매칭 빼기
+
+    console.log('중간5' + rankB);
     const deckB = await userDataClient.player_deck.findMany({
       where: {
         user_id: rankB.user_id,
@@ -81,8 +82,11 @@ router.post('/play/:id', authMiddleware, async (req, res, next) => {
         player_id: true,
       },
     });
+    if (!(deckB.length == 3)) {
+      return res.status(409).json({ message: '상대 덱이 미완성입니다' });
+    }
+    console.log(deckB[0]);
     // deckB : [{'player_id':1},{'player_id':2},{'player_id':3}]
-
     const MyAttack = await gameDataClient.player.findFirst({
       where: {
         id: deckA[0].player_id,
@@ -209,10 +213,8 @@ router.post('/play/:id', authMiddleware, async (req, res, next) => {
     // 선수 1,2,3 이 있을 때 각 선수들의 스텟을 기반으로 가중치 구현.
     // <포지션 별 가중치가 다르다면 어떨까?> // 기획요소
     // 사실 이게 테이블 상에서 해당 선수가 어떤 포지션인지 전혀 기획되지 않았기 때문에 있지만 의미없는 기획에 가깝다.
-
     const maxScore = scoreA + scoreB;
     const randomValue = Math.random() * maxScore;
-
     if (randomValue < scoreA) {
       // 승리
       const pluspoint = Math.floor(
@@ -270,14 +272,13 @@ router.post('/play/:id', authMiddleware, async (req, res, next) => {
       const updatedRank = await userDataClient.rank.update({
         where: { id: userA.id },
         data: {
-          draw: rankA.draw + 1
+          draw: rankA.draw + 1,
         },
       });
       return res.status(200).json({
-        message: `무승부하였습니다`
+        message: `무승부하였습니다`,
       });
-    }
-     else {
+    } else {
       // 패배
       const minuspoint = Math.floor(
         (rankA.rankpoint - rankB.rankpoint + 150) / 10
@@ -334,7 +335,7 @@ router.post('/play/:id', authMiddleware, async (req, res, next) => {
   } catch (error) {
     return res
       .status(500)
-      .json({ message: '게임 플레이에 오류가 발생하였습니다' });
+      .json({ message: '게임 플레이에 오류가 발생하였습니다' + error.message });
   }
 });
 
