@@ -16,10 +16,8 @@ const router = express.Router();
 // 2-3 . 적용된 가중치를 통한 플레이 진행
 // 3. 플레이 후 승패에 따른 점수 변동
 router.post('/custom_game/:id', authMiddleware, async (req, res, next) => {
-
-  const { id }  = req.params;
+  const { id } = req.params;
   const enemy_id = req.body.id;
-
 
   try {
     const deckA = await userDataClient.player_deck.findMany({
