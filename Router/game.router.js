@@ -282,7 +282,18 @@ router.post('/play/:id', authMiddleware, async (req, res, next) => {
         message: `승리하였습니다 +${pluspoint}
         현재 나의 점수 : ${updatedRank.rankpoint}`,
       });
-    } else {
+    } else if (randomValue === scoreA) {
+      const updatedRank = await userDataClient.rank.update({
+        where: { id: userA.id },
+        data: {
+          draw: rankA.draw + 1
+        },
+      });
+      return res.status(200).json({
+        message: `무승부하였습니다`
+      });
+    }
+     else {
       // 패배
       const minuspoint = Math.floor(
         (rankA.rankpoint - rankB.rankpoint + 150) / 10
