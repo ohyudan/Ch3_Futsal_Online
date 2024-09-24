@@ -1,5 +1,6 @@
 import express from 'express';
 import { userDataClient } from '../src/utils/prisma/index.js';
+import { gameDataClient } from '../src/utils/prisma/index.js';
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcrypt';
 import authMiddleware from '../src/middlewares/auth.middleware.js';
@@ -157,6 +158,7 @@ router.get('/myInventory/:id', authMiddleware, async (req, res, next) => {
         },
         select: {
           name: true,
+          count: true,
         },
       });
       if (playerInformation) response.push(playerInformation);

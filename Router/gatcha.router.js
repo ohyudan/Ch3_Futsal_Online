@@ -95,6 +95,39 @@ router.put('/packs/:id', authMiddleware, async (req, res) => {
   }
 });
 
+/** 선수 카드 상세 조회 API **/
+router.get('/player/:id', async (req, res) => {
+  const playerId = parseInt(req.params.id, 10);
+
+  try {
+    const player = await gameDataClient.player.findFirst({
+      where: { id: playerId },
+      select: {
+        id: true,
+        name: true,
+        speed: true,
+        shootpower: true,
+        goal_finish: true,
+        defense: true,
+        stamina: true,
+      },
+    });
+
+    if (!player) {
+      return res
+        .status(404)
+        .json({ message: '존재하지 않는 선수 카드입니다.' });
+    }
+
+    return res.status(200).json(player);
+  } catch (error) {
+    console.error('선수 카드 상세 조회 중 에러 발생:', error);
+    return res
+      .status(500)
+      .json({ message: '선수 카드 상세 조회 중 에러가 발생하였습니다.' });
+  }
+});
+
 /** 선수 뽑기 API **/
 router.post('/gacha/:id', authMiddleware, async (req, res) => {
   const { id } = req.params;
