@@ -15,13 +15,13 @@ const router = express.Router();
 // 2-2 . 선수 포지션 별 스텟 가중치 적용
 // 2-3 . 적용된 가중치를 통한 플레이 진행
 // 3. 플레이 후 승패에 따른 점수 변동
-router.post('/play/:id', authMiddleware, async (req, res, next) => {
-  const { id } = req.params;
+router.post('/rank_game/', authMiddleware, async (req, res, next) => {
+  const account_id = req.user.id;
 
   try {
     const userA = await userDataClient.users.findFirst({
       where: {
-        id: +id,
+        id: account_id,
       },
     });
 
@@ -45,7 +45,6 @@ router.post('/play/:id', authMiddleware, async (req, res, next) => {
         user_id: userA.id,
       },
     });
-    
 
     // 비슷한 rank점수를 가지고 있는 플레이어와 잡아주기
     // 자신의 랭크점수 +-100 안의 유저들의 리스트 생성
@@ -62,14 +61,29 @@ router.post('/play/:id', authMiddleware, async (req, res, next) => {
         rankpoint: true,
       },
     });
+    // [{user_id : 1, rankpoint : 987},{user_id : 2, rankpoint : 999}]
+    
+    const HaveDeckplayer = [];
+
+    for (i = 0; i < Matchlevel.length; i++) {
+      const IsExistDeck = await userDataClient.player_deck.findMany({
+        where: {
+          user_id: Matchlevel[i].user_id,
+        },
+      });
+
+      if (IsExistDeck.length === 3) {
+        HaveDeckplayer.push(Matchlevel[i])
+      }
+    }
 
     // 매칭이 가능한 유저가 없을 경우
-    if (Matchlevel.length === 0) {
+    if (HaveDeckplayer.length === 0) {
       return res.status(409).json({ message: '대전 가능한 상대가 없습니다.' });
     }
 
     // 해당 유저들의 리스트에서 랜덤한 대상과의 매치 추첨
-    const rankB = Matchlevel[Math.floor(Matchlevel.length * Math.random())];
+    const rankB = HaveDeckplayer[Math.floor((HaveDeckplayer.length) * Math.random())];
     // 랜덤으로 잡은 범위내의 유저의 id와 rankpoint
     // ex) rankB = {user_id : 1, rankpoint : 987}
 
@@ -270,14 +284,13 @@ router.post('/play/:id', authMiddleware, async (req, res, next) => {
       const updatedRank = await userDataClient.rank.update({
         where: { id: userA.id },
         data: {
-          draw: rankA.draw + 1
+          draw: rankA.draw + 1,
         },
       });
       return res.status(200).json({
-        message: `무승부하였습니다`
+        message: `무승부하였습니다`,
       });
-    }
-     else {
+    } else {
       // 패배
       const minuspoint = Math.floor(
         (rankA.rankpoint - rankB.rankpoint + 150) / 10
