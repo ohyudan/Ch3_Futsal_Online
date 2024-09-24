@@ -176,21 +176,21 @@ router.post('/gacha/:id', authMiddleware, async (req, res) => {
           const randomNum = Math.floor(Math.random() * 100);
           let drawResult = 0;
           if (randomNum < 23) {
-            drawResult = 1; //'C등급 player 1 id';
+            drawResult = 8; //'C등급 player 1 id';
           } else if (randomNum >= 23 && randomNum < 46) {
-            drawResult = 2; //'C등급 player 2 id';
+            drawResult = 7; //'C등급 player 2 id';
           } else if (randomNum >= 46 && randomNum < 62) {
-            drawResult = 3; //'B등급 player 1 id';
+            drawResult = 6; //'B등급 player 1 id';
           } else if (randomNum >= 62 && randomNum < 78) {
-            drawResult = 4; //'B등급 player 2 id';
+            drawResult = 5; //'B등급 player 2 id';
           } else if (randomNum >= 78 && randomNum < 87) {
-            drawResult = 5; //'A등급 player 1 id';
+            drawResult = 4; //'A등급 player 1 id';
           } else if (randomNum >= 87 && randomNum < 96) {
-            drawResult = 6; //'A등급 player 2 id';
+            drawResult = 3; //'A등급 player 2 id';
           } else if (randomNum >= 96 && randomNum < 98) {
-            drawResult = 7; //'S등급 player 1 id';
+            drawResult = 2; //'S등급 player 1 id';
           } else {
-            drawResult = 8; //'S등급 player 2 id';
+            drawResult = 1; //'S등급 player 2 id';
           }
           packResult.push(drawResult);
         }
@@ -201,21 +201,21 @@ router.post('/gacha/:id', authMiddleware, async (req, res) => {
           const randomNum = Math.floor(Math.random() * 100);
           let drawResult = 0;
           if (randomNum < 18) {
-            drawResult = 1; //'C등급 player 1 id';
+            drawResult = 8; //'C등급 player 1 id';
           } else if (randomNum >= 18 && randomNum < 36) {
-            drawResult = 2; //'C등급 player 2 id';
+            drawResult = 7; //'C등급 player 2 id';
           } else if (randomNum >= 36 && randomNum < 53) {
-            drawResult = 3; //'B등급 player 1 id';
+            drawResult = 6; //'B등급 player 1 id';
           } else if (randomNum >= 53 && randomNum < 70) {
-            drawResult = 4; //'B등급 player 2 id';
+            drawResult = 5; //'B등급 player 2 id';
           } else if (randomNum >= 70 && randomNum < 82) {
-            drawResult = 5; //'A등급 player 1 id';
+            drawResult = 4; //'A등급 player 1 id';
           } else if (randomNum >= 82 && randomNum < 94) {
-            drawResult = 6; //'A등급 player 2 id';
+            drawResult = 3; //'A등급 player 2 id';
           } else if (randomNum >= 94 && randomNum < 97) {
-            drawResult = 7; //'S등급 player 1 id';
+            drawResult = 2; //'S등급 player 1 id';
           } else {
-            drawResult = 8; //'S등급 player 2 id';
+            drawResult = 1; //'S등급 player 2 id';
           }
           packResult.push(drawResult);
         }
