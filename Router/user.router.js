@@ -261,6 +261,9 @@ router.post('/inMyDeck/:id', authMiddleware, async (req, res, next) => {
 router.get('/ready_user', authMiddleware, async (req, res, next) => {
   try {
     const result = await match_(req.account.id);
+    if (typeof result === 'string') {
+      return res.status(403).json({ message: '대전 가능한 상대가 없습니다.' });
+    }
     return res.status(201).json(result);
   } catch (err) {
     next(err);

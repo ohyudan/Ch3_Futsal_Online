@@ -42,7 +42,8 @@ export const match_ = async (userId) => {
   const filteredMatchLevel2 = matchLevel2.filter(Boolean);
 
   if (filteredMatchLevel2.length === 0) {
-    return res.status(403).json({ message: '대전 가능한 상대가 없습니다.' });
+    const result = '대전 가능한 상대가 없습니다.';
+    return result;
   }
   let random_Int = Math.floor(
     Math.random() * (filteredMatchLevel2.length - 0) + 0

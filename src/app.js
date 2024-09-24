@@ -7,15 +7,14 @@ import cookieParser from 'cookie-parser';
 import UsersRouter from '../Router/user.router.js';
 import GachaRouter from '../Router/gacha.router.js';
 import ErrorHandlingMiddleware from './middlewares/error-handling.middleware.js';
-import custom_game from '../Router/custom_game.router.js';
-import rank_game from '../Router/rank_game.router.js'
+import rank_game from '../Router/rank_game.router.js';
 
 const app = express();
 const PORT = 3000;
 
 app.use(express.json());
 
-app.use('/api', [deck, player, rank, custom_game, rank_game]);
+app.use('/api', [deck, player, rank, rank_game]);
 
 app.use(cookieParser());
 
