@@ -1,5 +1,6 @@
 import express from 'express';
 import { userDataClient } from '../src/utils/prisma/index.js';
+import { gameDataClient } from '../src/utils/prisma/index.js';
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcrypt';
 import authMiddleware from '../src/middlewares/auth.middleware.js';
@@ -142,10 +143,11 @@ router.get('/myInventory/:id', authMiddleware, async (req, res, next) => {
     for (const myPlayer of myPlayers) {
       const playerInformation = await gameDataClient.player.findUnique({
         where: {
-          id: myPlayers.player_id,
+          id: myPlayer.player_id,
         },
         select: {
           name: true,
+          count: true,
         },
       });
       if (playerInformation) response.push(playerInformation);
