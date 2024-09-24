@@ -22,7 +22,6 @@ shootpower Int @map("shootpower")
 goal_finish Int @map("goal_finish")
 defense Int @map("defense")
 stamina Int @map("stamina")
-level Int @map("level")
 
 @@map("player")
 }
