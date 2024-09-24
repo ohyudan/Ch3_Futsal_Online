@@ -26,3 +26,12 @@ level Int @map("level")
 
 @@map("player")
 }
+
+
+model packs {
+id     Int    @id @default(autoincrement())
+type   String @map("type")
+price  Int    @map("price")
+
+@@map("packs")
+}

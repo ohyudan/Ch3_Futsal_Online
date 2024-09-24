@@ -20,7 +20,7 @@
     "prettier": "^3.3.3"
   },
   "scripts": {
-    "dev": "nodemon app.js",
+    "dev": "nodemon ./src/app.js",
     "format": "prettier --write *.js **/*.js"
   }
 }

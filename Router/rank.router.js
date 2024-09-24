@@ -1,10 +1,7 @@
 import express from 'express';
-import { PrismaClient as UsersDataClient } from '../prisma/user/generated/UserDataClient/index.js';
-import { updateRankings } from '../src/utills/Rank_Sort.js';
-const user_Data_Prisma = new UsersDataClient({
-  log: ['query', 'info', 'warn', 'error'],
-  errorFormat: 'pretty',
-});
+import { userDataClient } from '../src/utils/prisma/index.js';
+import { updateRankings } from '../src/utils/Rank_Sort.js';
+import adminAuthMiddleware from '../src/middlewares/admin.auth.middleware.js';
 
 const router = express.Router();
 /** 유저 랭킹 조회하기 GET
@@ -12,7 +9,7 @@ const router = express.Router();
  */
 router.get(`/ranking`, async (req, res, next) => {
   try {
-    const rankings = await user_Data_Prisma.rank.findMany({
+    const rankings = await userDataClient.rank.findMany({
       orderBy: {
         rankpoint: 'desc',
       },
@@ -28,7 +25,7 @@ router.get(`/ranking`, async (req, res, next) => {
 router.get(`/ranking/:user_id`, async (req, res, next) => {
   try {
     const { user_id } = req.params;
-    const player_rank = await user_Data_Prisma.rank.findUnique({
+    const player_rank = await userDataClient.rank.findUnique({
       where: { user_id: +user_id },
       select: {
         rank: true,
@@ -48,7 +45,7 @@ router.get(`/ranking/:user_id`, async (req, res, next) => {
  * 오유단
  * JWT
  */
-router.post(`/ranking/refresh`, async (req, res, next) => {
+router.post(`/ranking/refresh`, adminAuthMiddleware, async (req, res, next) => {
   try {
     // 계정 확인 추가
     updateRankings();

@@ -1,10 +1,11 @@
 import jwt from 'jsonwebtoken';
 import { userDataClient } from '../utils/prisma/index.js';
+import dotenv from 'dotenv';
 
 // 인증 미들웨어
 export default async function (req, res, next) {
   try {
-    const { authorization } = req.cookies;
+    const authorization = req.headers.authorization;
     if (!authorization)
       throw new Error('요청한 사용자의 토큰이 존재하지 않습니다.');
 
@@ -12,7 +13,7 @@ export default async function (req, res, next) {
     if (tokenType !== 'Bearer')
       throw new Error('토큰 타입이 Bearer 형식이 아닙니다.');
 
-    const decodedToken = jwt.verify(token, 'turtle-secret-key');
+    const decodedToken = jwt.verify(token, process.env.SECRET_KEY); //env 추가
     const id = decodedToken.id;
 
     const user = await userDataClient.users.findFirst({
