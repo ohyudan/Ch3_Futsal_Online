@@ -15,7 +15,7 @@ const router = express.Router();
 // 2-2 . 선수 포지션 별 스텟 가중치 적용
 // 2-3 . 적용된 가중치를 통한 플레이 진행
 // 3. 플레이 후 승패에 따른 점수 변동
-router.post('/rank_game/', authMiddleware, async (req, res, next) => {
+router.post('/rank_game', authMiddleware, async (req, res, next) => {
   const account_id = req.account.id;
 
   try {
