@@ -214,9 +214,12 @@ router.post('/inMyDeck/:id', authMiddleware, async (req, res, next) => {
           },
         });
 
-        await userDataClient.inventory.delete({
+        await userDataClient.inventory.deleteMany({
           where: {
             id: inventoryPlayer.id,
+            count: {
+              equals: 0,
+            },
           },
         });
       }
