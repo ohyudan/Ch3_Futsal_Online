@@ -1,6 +1,5 @@
 import express from 'express';
 import { userDataClient } from '../src/utils/prisma/index.js';
-import { gameDataClient } from '../src/utils/prisma/index.js';
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcrypt';
 import authMiddleware from '../src/middlewares/auth.middleware.js';
@@ -157,7 +156,6 @@ router.get('/myInventory/:id', authMiddleware, async (req, res, next) => {
         },
         select: {
           name: true,
-          count: true,
         },
       });
 
@@ -225,16 +223,18 @@ router.post('/inMyDeck/:id', authMiddleware, async (req, res, next) => {
           },
         });
 
-        await userDataClient.inventory.delete({
+        await userDataClient.inventory.deleteMany({
           where: {
             id: inventoryPlayer.id,
+            count: {
+              equals: 0,
+            },
           },
         });
       }
 
       return res.status(201).json({ message: '선수를 덱에 추가하였습니다.' });
     }
-
   } catch (err) {
     next(err);
   }
