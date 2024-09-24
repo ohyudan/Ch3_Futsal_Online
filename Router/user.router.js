@@ -62,7 +62,6 @@ router.post('/sign-up', async (req, res, next) => {
 
     await userDataClient.rank.create({
       data: {
-        id,
         user_id: user.id,
         rank: null, // 테이블에서 별도 작업을 해서 rankpoint에 의해 order by 되는 값이 되어야 함
         tier: 'Bronze',
@@ -171,13 +170,13 @@ router.get('/myInventory/:id', authMiddleware, async (req, res, next) => {
 // 팀원 추가 API
 router.post('/inMyDeck/:id', authMiddleware, async (req, res, next) => {
   const userId = parseInt(req.params.id, 10);
-  const { playerId } = req.body;
+  const { player_id } = req.body;
 
   try {
     const inventoryPlayer = await userDataClient.inventory.findFirst({
       where: {
         user_id: userId,
-        player_id: playerId,
+        player_id: player_id,
       },
       select: {
         count: true,
@@ -192,13 +191,13 @@ router.post('/inMyDeck/:id', authMiddleware, async (req, res, next) => {
     await userDataClient.player_deck.create({
       data: {
         user_id: userId,
-        player_id: playerId,
+        player_id: player_id,
       },
     });
 
     // await userDataClient.inventory.update({
     //   where: {
-    //     player_id: playerId,
+    //     player_id: player_id,
     //   },
     //   data: {
     //     count: {
@@ -210,7 +209,7 @@ router.post('/inMyDeck/:id', authMiddleware, async (req, res, next) => {
     // if (inventoryPlayer.count === 0) {
     //   await userDataClient.inventory.delete({
     //     where: {
-    //       player_id: playerId,
+    //       player_id: player_id,
     //     },
     //   });
     // }
@@ -221,9 +220,8 @@ router.post('/inMyDeck/:id', authMiddleware, async (req, res, next) => {
 });
 
 // 대전 가능 상대 조회 API
-router.get('/ready_player/:id', async (req, res, next) => {
+router.get('/ready_user/:id', async (req, res, next) => {
   const userId = parseInt(req.params.id);
-
   try {
     const matchLevel = await userDataClient.rank.findMany({
       where: {

@@ -28,8 +28,8 @@ model rank {
 
   id        Int    @id @default(autoincrement()) @map("id")
   user_id   Int    @unique @map("user_id")
-  rankpoint Int    @map("rankpoint")
-  rank      Int?   @map("rank") @default(1000)
+  rankpoint Int    @map("rankpoint") @default(1000)
+  rank      Int?   @map("rank") 
   tier      String @map("tier") @db.VarChar(20)
   win       Int    @map("win")
   draw      Int    @map("draw")
