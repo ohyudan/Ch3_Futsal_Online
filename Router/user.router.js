@@ -268,7 +268,7 @@ router.get('/ready_user', authMiddleware, async (req, res, next) => {
       },
     });
 
-    const matchLevel = await userDataClient.rank.findMany({
+    const matchLevel1 = await userDataClient.rank.findMany({
       where: {
         rankpoint: {
           gte: myrankpoint.rankpoint - 100,
@@ -287,12 +287,27 @@ router.get('/ready_user', authMiddleware, async (req, res, next) => {
       take: 10,
     });
 
-    // 매칭 가능한 유저가 없을 경우
-    if (matchLevel.length === 0) {
+    const matchLevel2 = await Promise.all(
+      matchLevel1.map(async (value) => {
+        const usersdeckCount = await userDataClient.player_deck.count({
+          where: { user_id: value.user_id },
+        });
+        if (usersdeckCount === 3) {
+          return value;
+        }
+        return null;
+      })
+    );
+
+    const filteredMatchLevel2 = matchLevel2.filter(Boolean);
+
+    if (filteredMatchLevel2.length === 0) {
       return res.status(403).json({ message: '대전 가능한 상대가 없습니다.' });
     }
-    let random_Int = Math.floor(Math.random() * (matchLevel.length - 0) + 0);
-    const result = matchLevel[random_Int];
+    let random_Int = Math.floor(
+      Math.random() * (filteredMatchLevel2.length - 0) + 0
+    );
+    const result = filteredMatchLevel2[random_Int];
     return res.status(201).json(result);
   } catch (err) {
     next(err);
